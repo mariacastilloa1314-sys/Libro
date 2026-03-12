@@ -24,9 +24,9 @@
   --red-ink:    rgba(155,18,18,0.85);
   --paper:      #f4f0e2;
   --paper2:     #eee8d0;
-  --sepia:      #4a2e14;
-  --sepia2:     #6a4020;
-  --sepia3:     #8a5c30;
+  --sepia:      #1e3260;
+  --sepia2:     #2a4480;
+  --sepia3:     #4a6aaa;
   --line-col:   rgba(50,80,180,0.10);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -246,9 +246,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   pointer-events:none;z-index:2;
 }
 .pg-r::before{
-  content:"";position:absolute;top:0;left:0;width:32px;height:100%;
-  background:linear-gradient(to left,transparent,rgba(0,0,0,.18));
-  pointer-events:none;z-index:2;
+  /* nullified — see override block */
+  content:"";pointer-events:none;z-index:2;
 }
 .pg-r{
   background:#0d0a06;
@@ -282,7 +281,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
    JOURNAL / DIARY PAGES
 ═══════════════════════════════════════ */
 .p-journal{
-  width:100%;height:100%;position:relative;overflow:hidden;
+  width:100%;height:100%;position:relative;overflow-y:auto;overflow-x:hidden;
   background:
     radial-gradient(ellipse at 10% 8%,rgba(230,210,160,.32) 0%,transparent 38%),
     radial-gradient(ellipse at 90% 92%,rgba(215,195,145,.2) 0%,transparent 32%),
@@ -1152,168 +1151,149 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 
 
 /* ══════════════════════════════════════════════════════
-   VISUAL OVERRIDE — Estilo libro físico de lujo
-   Inspirado en El Libro Total
+   VISUAL OVERRIDE FINAL v3
 ══════════════════════════════════════════════════════ */
 
-/* ─── FONDO: azul-marino oscuro profundo ─── */
-html, body {
-  background: #111820 !important;
-}
-
-/* ─── SCENE: márgenes visibles alrededor del libro ─── */
+/* ── FONDO: azul marino oscuro como el ejemplo ── */
+html { height: 100% !important; }
+html, body { background: #12181f !important; }
 .scene {
-  padding: 3vh 5vw 2vh !important;
+  padding: 2.5vh 3vw 1.5vh !important;
   box-sizing: border-box !important;
-  background:
-    radial-gradient(ellipse at 50% 40%,
-      #1c2a3a 0%,
-      #111820 60%) !important;
+  background: radial-gradient(ellipse at 50% 45%, #1a2535 0%, #12181f 65%) !important;
 }
 
-/* ─── BOOK WRAPPER: sombra de libro flotando ─── */
+/* ── LIBRO MÁS GRANDE: que respire y llene la pantalla ── */
+:root {
+  --ph: clamp(480px, min(84vh, 760px), 760px) !important;
+  --pw: calc(var(--ph) / 1.45) !important;
+}
+
+/* ── LIBRO: borde gris-azulado como El Libro Total ── */
 .book {
-  filter:
-    drop-shadow(0 8px 40px rgba(0,0,0,.7))
-    drop-shadow(0 2px 8px rgba(0,0,0,.5)) !important;
+  filter: none !important;
 }
-
-/* ─── BOOK OPEN: borde plateado como el ejemplo ─── */
 .book-open {
-  border-radius: 4px !important;
+  border-radius: 3px !important;
   outline: none !important;
   box-shadow:
-    0 0 0 1px rgba(180,200,220,.25),
-    0 0 0 3px rgba(80,100,120,.5),
-    0 0 0 4px rgba(180,200,220,.12),
-    0 20px 80px rgba(0,0,0,.8),
-    0  8px 30px rgba(0,0,0,.6) !important;
+    0 0 0 1px rgba(140,165,195,.35),
+    0 0 0 4px rgba(80,105,135,.55),
+    0 0 0 5px rgba(140,165,195,.20),
+    0 25px 80px rgba(0,0,0,.85),
+    0  6px 20px rgba(0,0,0,.5) !important;
 }
 
-/* ─── PÁGINAS: papel limpio y claro ─── */
+/* ── PÁGINAS: blanco-crema limpio ── */
 .pg-l {
-  background: #ede5ca !important;
-  box-shadow: inset -8px 0 20px rgba(0,0,0,.12) !important;
-  border-radius: 4px 0 0 4px !important;
+  background: #f7f2e8 !important;
+  box-shadow: inset -10px 0 24px rgba(0,0,0,.08) !important;
+  border-radius: 3px 0 0 3px !important;
+  overflow: hidden !important;
 }
 .pg-r {
-  background: #ede5ca !important;
-  box-shadow: inset 8px 0 20px rgba(0,0,0,.12) !important;
-  border-radius: 0 4px 4px 4px !important;
+  background: #f7f2e8 !important;
+  box-shadow: inset 10px 0 24px rgba(0,0,0,.08) !important;
+  border-radius: 0 3px 3px 3px !important;
+  overflow: hidden !important;
 }
 
-/* ─── BASE PAPEL: tono crema cálido ─── */
-.story-base-paper,
+/* ── FONDO PAPEL: gradiente cálido sutil ── */
 .story-base-paper,
 .pg-paper-fill {
   background:
-    radial-gradient(ellipse at 10% 8%,  rgba(230,210,160,.28) 0%, transparent 38%),
-    radial-gradient(ellipse at 90% 92%, rgba(215,195,145,.16) 0%, transparent 32%),
-    linear-gradient(178deg, #f6f1e5 0%, #f1e9d1 30%, #ede5ca 60%, #e9e0c2 100%) !important;
+    radial-gradient(ellipse at 10% 8%,  rgba(240,225,185,.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 92%, rgba(220,205,165,.20) 0%, transparent 35%),
+    #f7f2e8 !important;
 }
 
-/* ─── LOMO: oscuro y estrecho como encuadernación real ─── */
+/* ── LOMO: oscuro y fino ── */
 .book-spine {
   background: linear-gradient(to right,
-    #1a0e08 0%,
-    #2e1a10 25%,
-    #3e2418 50%,
-    #2e1a10 75%,
-    #1a0e08 100%) !important;
-  box-shadow:
-    inset 3px 0 6px rgba(0,0,0,.4),
-    inset -3px 0 6px rgba(0,0,0,.4) !important;
+    #1a0e08 0%, #2e1a10 25%, #3e2418 50%, #2e1a10 75%, #1a0e08 100%) !important;
+  box-shadow: inset 2px 0 8px rgba(0,0,0,.4), inset -2px 0 8px rgba(0,0,0,.4) !important;
 }
 
-/* ─── PAGE CURL: esquinas curvadas como en El Libro Total ─── */
-.pg-l::before {
-  content: "";
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 36px; height: 36px;
-  background: linear-gradient(
-    315deg,
-    transparent 50%,
-    rgba(200,180,140,.6) 50%,
-    rgba(220,205,170,.85) 65%,
-    rgba(240,230,210,.95) 100%
-  );
-  border-top-right-radius: 8px;
-  pointer-events: none;
-  z-index: 20;
-  box-shadow: 2px -2px 5px rgba(0,0,0,.18);
-}
-.pg-r::before {
-  content: "";
-  position: absolute;
-  bottom: 0; right: 0;
-  width: 36px; height: 36px;
-  background: linear-gradient(
-    225deg,
-    transparent 50%,
-    rgba(200,180,140,.6) 50%,
-    rgba(220,205,170,.85) 65%,
-    rgba(240,230,210,.95) 100%
-  );
-  border-top-left-radius: 8px;
-  pointer-events: none;
-  z-index: 20;
-  box-shadow: -2px -2px 5px rgba(0,0,0,.18);
-}
-
-/* ─── TEXTO: letra manuscrita ─── */
+/* ── TEXTO: azul lapicero, Caveat manuscrita ── */
 .story-scroll .pb,
 .story-scroll .pd {
   font-family: 'Caveat', cursive !important;
-  font-size: clamp(1.05rem, 1.7vw, 1.28rem) !important;
-  line-height: 1.75 !important;
-  color: #3a2010 !important;
+  font-size: clamp(1.1rem, 1.8vw, 1.35rem) !important;
+  line-height: 1.72 !important;
+  color: #1e3260 !important;
   letter-spacing: .01em !important;
   font-weight: 400 !important;
 }
-.story-scroll em, .story-scroll .pb em {
-  font-style: italic !important;
-  color: #5a2010 !important;
-}
 .story-scroll .qblock {
   font-family: 'Caveat', cursive !important;
-  font-size: clamp(1.0rem, 1.6vw, 1.22rem) !important;
+  font-size: clamp(1.05rem, 1.7vw, 1.28rem) !important;
+  color: #1e3260 !important;
+  border-left: 2px solid rgba(140,12,12,.3) !important;
+}
+.story-scroll em,
+.story-scroll .pb em {
+  font-style: italic !important;
+  color: #6a1010 !important;
+}
+.story-scroll .pt {
+  font-family: 'IM Fell English', serif !important;
+  color: #8a1818 !important;
 }
 .p-story.atmos-dark .story-scroll .pb,
-.p-story.atmos-dark .story-scroll .pd {
+.p-story.atmos-dark .story-scroll .pd,
+.p-story.atmos-horror .story-scroll .pb,
+.p-story.atmos-horror .story-scroll .pd {
   color: rgba(218,185,105,.95) !important;
 }
-.p-story.atmos-warm .story-scroll .pb,
-.p-story.atmos-warm .story-scroll .pd {
-  color: #2c1e10 !important;
+
+/* ── ATMÓSFERA: desactivada ── */
+.story-atmos-layer { opacity: 0 !important; }
+
+/* ── NAV ── */
+.nav-btn { color: rgba(160,185,210,.65) !important; }
+.nav-btn:hover { color: rgba(210,225,240,.95) !important; transform: scale(1.15) !important; }
+
+/* ── DOBLEZ INFERIOR — esquinas inferiores, triángulo blanco-crema ──
+   Igual que El Libro Total: triángulo pequeño doblado hacia adentro  */
+.pg-l::before,
+.pg-r::before {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  pointer-events: none !important;
+  z-index: 30 !important;
+}
+.pg-l::before {
+  left: 0 !important;
+  background:
+    linear-gradient(to top right,
+      #b8aa88 0%,
+      #cfc099 35%,
+      #f7f2e8 50%,
+      transparent 50%
+    ) !important;
+}
+.pg-r::before {
+  right: 0 !important;
+  background:
+    linear-gradient(to top left,
+      #b8aa88 0%,
+      #cfc099 35%,
+      #f7f2e8 50%,
+      transparent 50%
+    ) !important;
 }
 
-/* ─── ATMÓSFERA: opacidad menor para no matar el texto ─── */
-.story-atmos-layer.atmos-visible {
-  opacity: 0 !important;
-}
-
-/* ─── NAV ROW: iconos visibles sobre el fondo marino ─── */
-.nav-btn {
-  color: rgba(160,185,210,.7) !important;
-}
-.nav-btn:hover {
-  color: rgba(200,215,230,.95) !important;
-}
-
-/* ─── BOOK SIZE: más pequeño para que el fondo sea visible ─── */
-:root {
-  --ph: clamp(340px, min(72vh, 580px), 580px) !important;
-}
-
-/* ─── GRAIN: textura sutil en todo el fondo ─── */
-.scene::after {
-  content: "";
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0;
-  opacity: .06;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 300px 300px;
+/* ── GRAIN: textura muy sutil ── */
+body::before {
+  content: "" !important;
+  position: fixed !important; inset: 0 !important;
+  pointer-events: none !important; z-index: 9999 !important;
+  opacity: .04 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E") !important;
+  background-size: 200px 200px !important;
 }
 
 </style>

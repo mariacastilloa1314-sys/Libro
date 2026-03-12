@@ -24,9 +24,9 @@
   --red-ink:    rgba(155,18,18,0.85);
   --paper:      #f4f0e2;
   --paper2:     #eee8d0;
-  --sepia:      #1a2e6a;
-  --sepia2:     #2a4688;
-  --sepia3:     #6a82b8;
+  --sepia:      #4a2e14;
+  --sepia2:     #6a4020;
+  --sepia3:     #8a5c30;
   --line-col:   rgba(50,80,180,0.10);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -443,8 +443,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 }
 .j-body{
   font-family:'Caveat',cursive;
-  font-size:clamp(.9rem,1.75vw,1.12rem);
-  line-height:1.7;color:var(--sepia);
+  font-size:clamp(1.05rem,2vw,1.3rem);
+  line-height:1.85;color:var(--sepia);
 }
 .j-body em{font-style:italic;color:var(--sepia2);}
 .j-closing{color:var(--sepia2);font-style:italic;}
@@ -552,8 +552,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 }
 .nav-home.show{opacity:.7;pointer-events:auto;}
 .nav-home:hover{color:rgba(148,12,12,.95);opacity:1;transform:scale(1.15);}
-.zone{position:absolute;top:0;bottom:0;width:18%;z-index:15;cursor:pointer;display:none;}
-.zone-l{left:0}.zone-r{right:0}
+.zone{position:absolute;top:0;bottom:0;width:12%;z-index:15;cursor:pointer;display:none;}
+.zone-l{left:0}.zone-r{right:3px}
 .book-open .zone{display:block}
 
 /* ═══════════════════════════════════════
@@ -1192,23 +1192,24 @@ html, body {
 
 /* ─── PÁGINAS: papel limpio y claro ─── */
 .pg-l {
-  background: #f8f3e8 !important;
+  background: #ede5ca !important;
   box-shadow: inset -8px 0 20px rgba(0,0,0,.12) !important;
   border-radius: 4px 0 0 4px !important;
 }
 .pg-r {
-  background: #f8f3e8 !important;
+  background: #ede5ca !important;
   box-shadow: inset 8px 0 20px rgba(0,0,0,.12) !important;
   border-radius: 0 4px 4px 4px !important;
 }
 
 /* ─── BASE PAPEL: tono crema cálido ─── */
 .story-base-paper,
+.story-base-paper,
 .pg-paper-fill {
   background:
-    radial-gradient(ellipse at 8% 6%,   rgba(255,252,244,.9) 0%, transparent 45%),
-    radial-gradient(ellipse at 92% 95%, rgba(230,218,195,.6) 0%, transparent 40%),
-    #f5ede0 !important;
+    radial-gradient(ellipse at 10% 8%,  rgba(230,210,160,.28) 0%, transparent 38%),
+    radial-gradient(ellipse at 90% 92%, rgba(215,195,145,.16) 0%, transparent 32%),
+    linear-gradient(178deg, #f6f1e5 0%, #f1e9d1 30%, #ede5ca 60%, #e9e0c2 100%) !important;
 }
 
 /* ─── LOMO: oscuro y estrecho como encuadernación real ─── */
@@ -1264,10 +1265,10 @@ html, body {
 .story-scroll .pb,
 .story-scroll .pd {
   font-family: 'Caveat', cursive !important;
-  font-size: clamp(1.05rem, 1.7vw, 1.3rem) !important;
-  line-height: 2.0 !important;
-  color: #2a1a0e !important;
-  letter-spacing: .02em !important;
+  font-size: clamp(1.05rem, 1.7vw, 1.28rem) !important;
+  line-height: 1.75 !important;
+  color: #3a2010 !important;
+  letter-spacing: .01em !important;
   font-weight: 400 !important;
 }
 .story-scroll em, .story-scroll .pb em {

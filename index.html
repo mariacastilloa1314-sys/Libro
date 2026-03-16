@@ -552,7 +552,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 }
 .nav-home.show{opacity:.7;pointer-events:auto;}
 .nav-home:hover{color:rgba(148,12,12,.95);opacity:1;transform:scale(1.15);}
-.zone{position:absolute;top:0;bottom:0;width:5%;z-index:5;cursor:pointer;display:none;pointer-events:none;}
+.zone{position:absolute;top:0;bottom:0;width:15%;z-index:15;cursor:pointer;display:none;}
 .zone-l{left:0}.zone-r{right:0}
 .book-open .zone{display:block}
 
@@ -1008,18 +1008,10 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 /* Hidden YouTube iframe container */
 #yt-container {
   position: fixed;
-  bottom: 54px; right: 12px;
-  width: 160px; height: 90px;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9990;
-  border-radius: 6px;
+  top: -9999px; left: -9999px;
+  width: 1px; height: 1px;
+  opacity: 0; pointer-events: none;
   overflow: hidden;
-  transition: opacity 0.3s;
-}
-#yt-container.yt-active {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 /* ════════════════════════════════════════
@@ -1314,30 +1306,15 @@ html, body {
   border-radius: 4px 0 0 4px !important;
   overflow: hidden !important;
 }
-.pg-l .p-story {
-  height: auto !important;
-  min-height: 100% !important;
-  overflow: visible !important;
-}
 .pg-r {
   background: #f7f2e8 !important;
   border-radius: 0 4px 4px 4px !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(148,12,12,.22) transparent !important;
-}
-/* p-story is just a layout wrapper, pg-r scrolls */
-.pg-r .p-story {
-  height: auto !important;
-  min-height: 100% !important;
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 /* p-story must be above zones so scroll works */
 .p-story {
   z-index: 20 !important;
   position: relative !important;
-  touch-action: pan-y !important;
 }
 .story-base-paper,
 .pg-paper-fill {
@@ -1662,10 +1639,7 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
     min-height: 0 !important;
     max-height: none !important;
   }
-  /* Remove fixed height from .pg on mobile so pg-r fills scene */
-  .pg {
-    height: 100% !important;
-  }
+
 
   /* Curl solo en esquina inferior derecha en móvil */
   .pg-l::before { display: none !important; }
@@ -2159,17 +2133,8 @@ let _zoneDragX = 0, _zoneDragging = false;
   z.addEventListener('mousedown', e => { _zoneDragX = e.clientX; _zoneDragging = false; });
   z.addEventListener('mousemove', e => { if(Math.abs(e.clientX - _zoneDragX) > 5) _zoneDragging = true; });
 });
-// Zones now pointer-events:none; handle flip via pg clicks at edges
-pageR.addEventListener('click', function(e) {
-  if (e.target.closest('a,button,.p-story')) return;
-  const rect = pageR.getBoundingClientRect();
-  const relX = (e.clientX - rect.left) / rect.width;
-  if (relX > 0.88) flipNext();
-});
-pageL.addEventListener('click', function(e) {
-  if (e.target.closest('a,button,.p-story')) return;
-  flipPrev();
-});
+zoneR.addEventListener('click', flipNext);
+zoneL.addEventListener('click', flipPrev);
 // ── One-time wheel handlers for page scroll ──
 // wheel scroll handled natively by p-story overflow-y:auto
 
@@ -2372,11 +2337,8 @@ function _startYT(pageIdx, seekTime) {
   const player = players[pageIdx];
   if (!player || typeof player.playVideo !== 'function') return;
   try {
-    // Make YT container visible (required for some browsers to allow playback)
-    const ytCont = document.getElementById('yt-container');
-    if (ytCont) ytCont.classList.add('yt-active');
     if (seekTime != null) player.seekTo(seekTime, true);
-    player.unMute();
+    player.mute();
     player.setVolume(0);
     player.playVideo();
     isPlaying = true;
@@ -2449,8 +2411,6 @@ function stopMusic(pageIdx, fadeDur = 2200) {
   }
   isPlaying = false;
   mWidget.classList.remove('mw-playing');
-  const _ytC = document.getElementById('yt-container');
-  if (_ytC) _ytC.classList.remove('yt-active');
   if (currentMusicPage === pageIdx) {
     currentMusicPage = null;
     setTimeout(() => mWidget.classList.remove('mw-show'), fadeDur + 200);
@@ -2517,14 +2477,7 @@ window.onMusicPageChange = function(pageIdx, rightIdx) {
   const cfg = activeIdx != null ? MUSIC_PAGES[activeIdx] : null;
   if (cfg) {
     if (cfg.autoStart) {
-      // Show widget - user must click to play (browser autoplay policy)
-      mWidget.style.display = 'flex';
-      mWidget.classList.add('mw-show');
-      mLabel.textContent = '♪ ' + cfg.title;
-      mNotice.textContent = '▶ pulsa para escuchar';
-      mNotice.classList.add('show');
-      // Still try autoplay (works after user interaction)
-      startMusic(activeIdx, 600);
+      startMusic(activeIdx, 800);
     } else {
       // Show widget; music fires via IntersectionObserver on lyric paragraph
       mWidget.classList.add('mw-show');

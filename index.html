@@ -1126,17 +1126,17 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   position: fixed;
   bottom: clamp(100px,18vw,120px);
   right: clamp(10px,2.5vw,18px);
-  background: rgba(240,232,208,.96);
-  border: 1.5px solid rgba(148,12,12,.22);
+  background: rgba(240,232,208,.97);
+  border: 1.5px solid rgba(148,12,12,.35);
   border-radius: 10px;
-  padding: 7px 12px;
+  padding: 10px 16px;
   font-family: 'Caveat', cursive;
-  font-size: clamp(.7rem,1.2vw,.85rem);
-  color: rgba(148,12,12,.80);
+  font-size: clamp(.9rem,1.8vw,1.1rem);
+  color: rgba(148,12,12,.90);
   z-index: 9998;
   display: none;
-  max-width: 200px;
-  box-shadow: 0 4px 18px rgba(0,0,0,.10);
+  max-width: 220px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.18);
   cursor: pointer;
   transition: opacity .4s;
 }
@@ -2362,6 +2362,39 @@ function startMusic(pageIdx, delay = 0, seekTime) {
   else doPlay();
 }
 
+// Called directly from user tap - guaranteed user gesture context
+function _playNow(pageIdx) {
+  if (pageIdx === 13) {
+    const audioEl = document.getElementById('audio-zombie');
+    if (audioEl) {
+      audioEl.currentTime = 0;
+      audioEl.volume = 0;
+      audioEl.play().then(() => {
+        _fadeAudio(audioEl, 0, 0.55, 2400);
+        isPlaying = true;
+        mWidget.classList.add('mw-playing');
+        mBtn.title = 'Pausar música';
+      }).catch(() => _startYT(pageIdx, 0));
+      return;
+    }
+  }
+  // For YT pages: try player first, else open YouTube
+  if (ytApiReady && players[pageIdx] && typeof players[pageIdx].playVideo === 'function') {
+    _startYT(pageIdx, null);
+  } else {
+    // YT not ready yet - retry once after 1s
+    setTimeout(() => {
+      if (ytApiReady && players[pageIdx]) {
+        _startYT(pageIdx, null);
+      } else {
+        // Last resort: open YouTube in new tab
+        const ytId = MUSIC_PAGES[pageIdx]?.ytId;
+        if (ytId) window.open('https://youtu.be/' + ytId, '_blank');
+      }
+    }, 1200);
+  }
+}
+
 function _startYT(pageIdx, seekTime) {
   if (!ytApiReady) return;
   const player = players[pageIdx];
@@ -2452,34 +2485,18 @@ mBtn.addEventListener('click', () => {
   userInteracted = true;
   mNotice.classList.remove('show');
   const pg = currentMusicPage;
-  // For zombie: native audio
-  if (pg === 13) {
-    const audioEl = document.getElementById('audio-zombie');
-    if (audioEl) {
-      if (!audioEl.paused) {
-        audioEl.pause(); isPlaying = false;
-        mWidget.classList.remove('mw-playing'); mBtn.title = 'Reproducir música';
-      } else {
-        audioEl.play().then(() => {
-          isPlaying = true; mWidget.classList.add('mw-playing'); mBtn.title = 'Pausar música';
-        }).catch(() => _startYT(13));
-      }
-      return;
+  if (pg == null) return;
+  // If already playing: toggle pause
+  if (isPlaying) {
+    if (pg === 13) {
+      const a = document.getElementById('audio-zombie');
+      if (a && !a.paused) { a.pause(); isPlaying = false; mWidget.classList.remove('mw-playing'); mBtn.title = 'Reproducir música'; return; }
+    } else if (ytApiReady && players[pg]) {
+      try { players[pg].pauseVideo(); isPlaying = false; mWidget.classList.remove('mw-playing'); mBtn.title = 'Reproducir música'; return; } catch(e) {}
     }
   }
-  // YT for all other pages
-  if (pg == null) return;
-  if (!ytApiReady || !players[pg]) { startMusic(pg); return; }
-  try {
-    const state = players[pg].getPlayerState();
-    if (state === YT.PlayerState.PLAYING) {
-      players[pg].pauseVideo();
-      isPlaying = false; mWidget.classList.remove('mw-playing'); mBtn.title = 'Reproducir música';
-    } else {
-      players[pg].playVideo();
-      isPlaying = true; mWidget.classList.add('mw-playing'); mBtn.title = 'Pausar música';
-    }
-  } catch(e) { startMusic(pg); }
+  // Not playing: start now (this click IS a user gesture)
+  _playNow(pg);
 });
 
 // Called by renderPages when page changes
@@ -2506,21 +2523,22 @@ window.onMusicPageChange = function(pageIdx, rightIdx) {
 
   const cfg = activeIdx != null ? MUSIC_PAGES[activeIdx] : null;
   if (cfg) {
+    mWidget.classList.add('mw-show');
+    mLabel.textContent = '\u266a ' + cfg.title;
+    currentMusicPage = activeIdx;
     if (cfg.autoStart) {
-      // Show widget immediately, attempt autoplay (works after user interaction)
-      mWidget.classList.add('mw-show');
-      mLabel.textContent = '\u266a ' + cfg.title;
+      // Show tap-to-play notice. Music starts on first user tap (mBtn or notice).
       mNotice.textContent = '\u25b6 Toca para escuchar';
       mNotice.classList.add('show');
-      startMusic(activeIdx, 800);
-    } else {
-      // Show widget; music fires via IntersectionObserver on lyric paragraph
-      mWidget.classList.add('mw-show');
-      mLabel.textContent = '♪ ' + cfg.title;
-      try { if(players[activeIdx]) { players[activeIdx].seekTo(0); } } catch(e) {}
+      mNotice.style.cursor = 'pointer';
+      mNotice.onclick = function() {
+        mNotice.classList.remove('show');
+        _playNow(activeIdx);
+      };
     }
   } else {
     mWidget.classList.remove('mw-show');
+    mNotice.classList.remove('show');
   }
 };
 
@@ -2555,10 +2573,10 @@ function initMusicTriggers(){
     }
   }
 
-  // Method 1: IntersectionObserver with scroll container as root
-  const obsOptions = { threshold: 0.2 };
-  if(storyEl) obsOptions.root = storyEl;
+  // Use pageR as scroll root (it's the actual scroll container now)
+  const scrollRoot = document.getElementById('pageR');
 
+  // IntersectionObserver with pageR as root
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if(entry.isIntersecting && !entry.target.classList.contains("music-active")){
@@ -2566,45 +2584,27 @@ function initMusicTriggers(){
         playZombieAt(parseFloat(entry.target.dataset.time) || 0);
       }
     });
-  }, obsOptions);
+  }, { root: scrollRoot, threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
   triggers.forEach(t => observer.observe(t));
 
-  // Method 2: Scroll-based fallback (for cases where IntersectionObserver doesn't fire)
-  if(storyEl){
+  // Scroll-based fallback using pageR
+  if(scrollRoot){
     const scrollCheck = () => {
-      const scrollTop = storyEl.scrollTop;
-      const clientH = storyEl.clientHeight;
+      const scrollTop = scrollRoot.scrollTop;
+      const clientH = scrollRoot.clientHeight;
       triggers.forEach(t => {
         if(t.classList.contains('music-active')) return;
-        // offsetTop relative to p-story scroll container
-        let offsetTop = 0;
-        let el = t;
-        while(el && el !== storyEl){ offsetTop += el.offsetTop; el = el.offsetParent; }
-        const visible = offsetTop < scrollTop + clientH && (offsetTop + t.clientHeight) > scrollTop;
-        if(visible){
+        let offsetTop = 0, el = t;
+        while(el && el !== scrollRoot){ offsetTop += el.offsetTop; el = el.offsetParent; }
+        if(offsetTop < scrollTop + clientH && (offsetTop + t.clientHeight) > scrollTop){
           t.classList.add('music-active');
           playZombieAt(parseFloat(t.dataset.time) || 0);
         }
       });
     };
-    storyEl.addEventListener('scroll', scrollCheck, {passive:true});
+    scrollRoot.addEventListener('scroll', scrollCheck, {passive:true});
     setTimeout(scrollCheck, 400);
   }
-
-  // Fade-out: when LAST trigger leaves view, fade out music
-  const lastTrigger = triggers[triggers.length - 1];
-  const fadeObs = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(!entry.isIntersecting && lastTrigger.classList.contains("music-active")){
-        const audioEl = document.getElementById('audio-zombie');
-        if(audioEl && !audioEl.paused){
-          _fadeAudio(audioEl, audioEl.volume, 0, 4500);
-          setTimeout(() => { try{ audioEl.pause(); }catch(e){} }, 4600);
-        }
-      }
-    });
-  }, storyEl ? {root: storyEl, threshold: 0.1} : {threshold: 0.1});
-  fadeObs.observe(lastTrigger);
 }
 
 // Fade out music when reader reaches the end of a music story

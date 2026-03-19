@@ -1775,34 +1775,50 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
 
 /* ── Botones de música inline en el texto ── */
 .music-tap-wrap {
-  display: inline;
+  position: relative;
+  display: inline-block;
   cursor: pointer;
+  margin-top: 1.4em; /* espacio para la anotación encima */
 }
-/* "toca aquí" aparece inline ANTES del nombre, como anotación */
+/* Anotación manuscrita encima, como en la foto */
 .music-tap-annotation {
-  display: inline;
+  position: absolute;
+  bottom: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Caveat', cursive;
-  font-size: 0.82em;
-  color: #3a0a0a;
-  margin-right: 3px;
+  font-size: 0.74em;
+  color: #2a0505;
+  white-space: nowrap;
   pointer-events: none;
   font-style: normal;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+/* Flechita hacia abajo */
+.music-tap-annotation::after {
+  content: '';
+  display: block;
+  margin: 1px auto 0;
+  width: 0; height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 4px solid #2a0505;
 }
 .music-tap-wrap.played .music-tap-annotation { display: none; }
 .music-tap-btn {
   display: inline;
-  color: #6b0d0d;
+  color: #5a0a0a;
   font-style: italic;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  border-bottom: 1.5px dashed #6b0d0d;
+  border-bottom: 1.5px dashed #5a0a0a;
   padding: 0 2px;
   transition: color .2s, border-color .2s;
-  -webkit-tap-highlight-color: rgba(107,13,13,.15);
+  -webkit-tap-highlight-color: rgba(90,10,10,.15);
 }
-.music-tap-btn:hover, .music-tap-btn:active { color: #3a0808; border-bottom-style: solid; }
-.music-tap-btn.played { color: rgba(107,13,13,.45); border-bottom-color: transparent; cursor: default; }
+.music-tap-btn:hover, .music-tap-btn:active { color: #2a0404; border-bottom-style: solid; }
+.music-tap-btn.played { color: rgba(90,10,10,.40); border-bottom-color: transparent; cursor: default; }
 .music-tap-btn:hover,
 .music-tap-btn:active {
   color: rgba(148,12,12,1);
@@ -2267,7 +2283,7 @@ document.querySelectorAll('a,button,input,.open-hint,.book-closed,.zone').forEac
   src="https://archive.org/download/the-veronicas-take-me-on-the-floor-warner-records/The%20Veronicas%20-%20Take%20Me%20On%20The%20Floor-Warner%20Records.mp3">
 </audio>
 <audio id="audio-evil-morty" preload="none"
-  src="https://archive.org/download/evil-morty-theme-season-5-version-rick-morty-unreleased-music/Evil%20Morty%20Theme%20Season%205%20Version%20(Rick%20%26%20Morty%20Unreleased%20Music).mp3">
+  src="https://archive.org/download/evil-morty-theme-season-5-version-rick-morty-unreleased-music/evil-morty-theme-season-5-version-rick-morty-unreleased-music.mp3">
 </audio>
 <audio id="audio-midnight" preload="none" loop
   src="https://archive.org/download/m-83-midnight-city-lyrics/M83%20-%20Midnight%20City%20(Lyrics).mp3">
@@ -2355,7 +2371,7 @@ function startZombie(seekSecs) {
   mWidget.classList.add('mw-show', 'mw-playing');
   mNotice.classList.remove('show');
 
-  zombieAudio.currentTime = seekSecs || 121;
+  zombieAudio.currentTime = (seekSecs != null && seekSecs !== undefined) ? seekSecs : 121;
   zombieAudio.loop = false;
   zombieAudio.volume = 0;
   zombieAudio.play().then(() => {
@@ -2482,14 +2498,33 @@ function initMusicEndTriggers() {}
 
 function startEvilMorty() {
   const audio = document.getElementById('audio-evil-morty');
-  const trigger = document.querySelector('[onclick="startEvilMorty()"] .music-tap-btn');
-  if (trigger) { trigger.closest('.music-tap-wrap').classList.add('played'); }
   if (!audio) return;
-  audio.currentTime = 0;
-  audio.volume = 0;
-  audio.play().then(() => {
-    fadeAudio(audio, 0, 0.55, 2000);
-  }).catch(() => {});
+  const trigger = document.querySelector('.music-tap-wrap[onclick="startEvilMorty()"]');
+  if (trigger) trigger.classList.add('played');
+
+  const base = 'https://archive.org/download/evil-morty-theme-season-5-version-rick-morty-unreleased-music/';
+  const urls = [
+    base + 'evil-morty-theme-season-5-version-rick-morty-unreleased-music.mp3',
+    base + 'Evil%20Morty%20Theme%20Season%205%20Version%20(Rick%20%26%20Morty%20Unreleased%20Music).mp3',
+    base + 'Evil%20Morty%20Theme.mp3',
+    base + 'Evil_Morty_Theme_Season_5.mp3',
+    'https://archive.org/download/evil-morty-theme-season-5-version-rick-morty-unreleased-music/evil-morty-theme-season-5-version-rick-morty-unreleased-music.mp3',
+  ];
+
+  function tryUrl(i) {
+    if (i >= urls.length) return;
+    audio.src = urls[i];
+    audio.currentTime = 0;
+    audio.volume = 0;
+    audio.load();
+    // Wait a moment for load to register
+    setTimeout(() => {
+      audio.play()
+        .then(() => fadeAudio(audio, 0, 0.55, 2000))
+        .catch(() => tryUrl(i + 1));
+    }, 300);
+  }
+  tryUrl(0);
 }
 
 function stopAllMusic() {

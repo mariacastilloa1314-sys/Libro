@@ -2207,7 +2207,7 @@ document.querySelectorAll('a,button,input,.open-hint,.book-closed,.zone').forEac
   el.addEventListener('mouseleave',()=>{cr.style.width='22px';cr.style.height='22px';cr.style.borderColor='rgba(184,149,106,.35)';});
 });
 </script>
-<div id="yt-container"><div id="yt-midnight"></div><div id="yt-floor"></div><div id="yt-zombies"></div></div>
+
 
 <!-- Audio nativo para Relato 10 (reemplaza YouTube si embedding está bloqueado) -->
 <audio id="audio-zombie" preload="none" loop
@@ -2228,543 +2228,148 @@ document.querySelectorAll('a,button,input,.open-hint,.book-closed,.zone').forEac
 <div id="music-autoplay-notice">♪ Toca para activar la música</div>
 
 <script>
-/* ═══════════════════════════════════════════════════
-   MUSIC ENGINE
-   Relato 4  → Midnight City (M83)   — plays from start
-   Relato 10 → Take Me on the Floor  — starts at first lyric
-═══════════════════════════════════════════════════ */
-const MUSIC_PAGES = {
-  7:  { ytId: 'dX3k_QDnzHE', title: 'Midnight City — M83',          autoStart: true,  container: 'yt-midnight' },
-  13: { ytId: 'OoAOPUO3QTo', title: 'Take Me on the Floor — The Veronicas', autoStart: false, container: 'yt-zombies' }
-};
+/* ═══════════════════════════════
+   MÚSICA — sistema simple
+═══════════════════════════════ */
 
-let ytApiReady = false;
-let players = {};       // { pageIdx: YT.Player }
+// ── Variables ──
 let currentMusicPage = null;
 let isPlaying = false;
-let userInteracted = false;
-let fadeTicker = null;
-
 const mWidget  = document.getElementById('music-widget');
 const mBtn     = document.getElementById('music-btn');
 const mLabel   = document.getElementById('music-track-label');
 const mNotice  = document.getElementById('music-autoplay-notice');
 
-// Track user interaction (needed for autoplay policy)
-document.addEventListener('click', () => { userInteracted = true; }, { once: true });
-document.addEventListener('keydown', () => { userInteracted = true; }, { once: true });
-document.addEventListener('touchstart', () => { userInteracted = true; }, { once: true, passive: true });
-document.addEventListener('pointerdown', () => { userInteracted = true; }, { once: true });
-
-// Load YouTube IFrame API
-(function loadYT() {
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api'; tag.async = true;
-  document.head.appendChild(tag);
-})();
-
-window.onYouTubeIframeAPIReady = function () {
-  ytApiReady = true;
-  Object.entries(MUSIC_PAGES).forEach(([pgIdx, cfg]) => {
-    players[pgIdx] = new YT.Player(cfg.container, {
-      height: '1', width: '1',
-      videoId: cfg.ytId,
-      playerVars: {
-        autoplay: 0, controls: 0, disablekb: 1,
-        fs: 0, iv_load_policy: 3, modestbranding: 1,
-        rel: 0
-      },
-      events: {
-        onReady: (e) => {
-          e.target.setVolume(0);
-          e.target.unMute();
-        },
-        onStateChange: (e) => {
-          if (e.data === YT.PlayerState.ENDED) {
-            // Loop Midnight City; stop Take Me on the Floor
-            if (parseInt(Object.keys(players).find(k => players[k] === e.target)) === 7) {
-              e.target.seekTo(0); e.target.playVideo();
-            }
-          }
-        }
-      }
-    });
-  });
-};
-
-function fadeVolume(player, fromVol, toVol, durationMs, onDone) {
-  clearInterval(fadeTicker);
-  const steps = 30;
-  const interval = durationMs / steps;
-  let step = 0;
-  fadeTicker = setInterval(() => {
-    step++;
-    const vol = fromVol + (toVol - fromVol) * (step / steps);
-    try { player.setVolume(Math.round(Math.max(0, Math.min(100, vol)))) } catch(e) {}
-    if (step >= steps) {
-      clearInterval(fadeTicker);
-      try { if (toVol === 0) player.pauseVideo(); } catch(e) {}
-      if (onDone) onDone();
-    }
-  }, interval);
-}
-
-function startMusic(pageIdx, delay = 0, seekTime) {
-  const cfg = MUSIC_PAGES[pageIdx];
-  if (!cfg) return;
-  if (currentMusicPage === pageIdx && isPlaying) {
-    // Ya suena — solo seek si se pide
-    if (seekTime != null) _musicSeek(pageIdx, seekTime);
-    return;
-  }
-
-  currentMusicPage = pageIdx;
-  mLabel.textContent = '♪ ' + cfg.title;
+// ── Página 7: Midnight City ──
+// Muestra iframe de YouTube directamente — el usuario toca play en el iframe
+function showMidnightCity() {
+  currentMusicPage = 7;
+  mLabel.textContent = '♪ Midnight City — M83';
   mWidget.classList.add('mw-show');
-  mNotice.classList.remove('show');
-
-  function doPlay() {
-    // For zombie (page 13): use native audio from archive.org
-    if (pageIdx === 13) {
-      const audioEl = document.getElementById('audio-zombie');
-      if (audioEl && audioEl.src) {
-        audioEl.volume = 0;
-        audioEl.currentTime = seekTime || 0;
-        audioEl.play().then(() => {
-          _fadeAudio(audioEl, 0, 0.55, 2400);
-          isPlaying = true;
-          mWidget.classList.add('mw-playing');
-          mBtn.title = 'Pausar música';
-        }).catch(() => _startYT(pageIdx, seekTime));
-        return;
-      }
-    }
-    // All other pages: YT player
-    if (ytApiReady && players[pageIdx]) {
-      _startYT(pageIdx, seekTime);
-    } else {
-      // YT not ready - retry up to 5 times
-      let tries = 0;
-      const retry = setInterval(() => {
-        tries++;
-        if (ytApiReady && players[pageIdx]) {
-          clearInterval(retry);
-          _startYT(pageIdx, seekTime);
-        } else if (tries >= 5) {
-          clearInterval(retry);
-          // YT failed - show direct link fallback
-          mNotice.innerHTML = '<a href="https://youtu.be/' + (MUSIC_PAGES[pageIdx]?.ytId||'') + '" target="_blank" style="color:inherit;text-decoration:underline">▶ Abrir música</a>';
-          mNotice.classList.add('show');
-        }
-      }, 1000);
-    }
+  // Crear iframe YT si no existe
+  if (!document.getElementById('yt-mc-iframe')) {
+    const wrap = document.createElement('div');
+    wrap.id = 'yt-mc-wrap';
+    wrap.style.cssText = 'position:fixed;bottom:105px;right:10px;z-index:9998;border-radius:8px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+    wrap.innerHTML = '<iframe id="yt-mc-iframe" width="200" height="113" src="https://www.youtube.com/embed/dX3k_QDnzHE?rel=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    document.body.appendChild(wrap);
   }
-
-  if (delay > 0) setTimeout(doPlay, delay);
-  else doPlay();
+  document.getElementById('yt-mc-wrap').style.display = '';
 }
 
-// Called directly from user tap - guaranteed user gesture context
-function _playNow(pageIdx) {
-  if (pageIdx === 13) {
-    const audioEl = document.getElementById('audio-zombie');
-    if (audioEl) {
-      audioEl.currentTime = 0;
-      audioEl.volume = 0;
-      audioEl.play().then(() => {
-        _fadeAudio(audioEl, 0, 0.55, 2400);
+function hideMidnightCity() {
+  const wrap = document.getElementById('yt-mc-wrap');
+  if (wrap) wrap.style.display = 'none';
+}
+
+// ── Página 13: The Veronicas ──
+// Audio nativo desde archive.org, arranca al llegar al párrafo
+const zombieAudio = document.getElementById('audio-zombie');
+
+function playZombie() {
+  if (!zombieAudio) return;
+  currentMusicPage = 13;
+  mLabel.textContent = '♪ Take Me on the Floor — The Veronicas';
+  mWidget.classList.add('mw-show', 'mw-playing');
+  mNotice.classList.remove('show');
+  zombieAudio.currentTime = 0;
+  zombieAudio.volume = 0;
+  zombieAudio.play().then(() => {
+    // fade in
+    let v = 0;
+    const t = setInterval(() => {
+      v = Math.min(0.6, v + 0.02);
+      zombieAudio.volume = v;
+      if (v >= 0.6) clearInterval(t);
+    }, 80);
+    isPlaying = true;
+    mWidget.classList.add('mw-playing');
+  }).catch(err => {
+    console.log('Zombie audio failed:', err);
+    mNotice.textContent = '▶ Toca para escuchar';
+    mNotice.classList.add('show');
+    mNotice.onclick = () => { mNotice.classList.remove('show'); zombieAudio.play(); };
+  });
+}
+
+// ── Botón del widget ──
+mBtn.addEventListener('click', () => {
+  if (currentMusicPage === 7) {
+    // Toggle iframe visibility
+    const wrap = document.getElementById('yt-mc-wrap');
+    if (wrap) wrap.style.display = wrap.style.display === 'none' ? '' : 'none';
+  } else if (currentMusicPage === 13 && zombieAudio) {
+    if (!zombieAudio.paused) {
+      zombieAudio.pause();
+      isPlaying = false;
+      mWidget.classList.remove('mw-playing');
+      mBtn.title = 'Reproducir música';
+    } else {
+      zombieAudio.play().then(() => {
         isPlaying = true;
         mWidget.classList.add('mw-playing');
         mBtn.title = 'Pausar música';
-      }).catch(() => _startYT(pageIdx, 0));
-      return;
+      });
     }
   }
-  // For YT pages: try player first, else open YouTube
-  if (ytApiReady && players[pageIdx] && typeof players[pageIdx].playVideo === 'function') {
-    _startYT(pageIdx, null);
-  } else {
-    // YT not ready yet - retry once after 1s
-    setTimeout(() => {
-      if (ytApiReady && players[pageIdx]) {
-        _startYT(pageIdx, null);
-      } else {
-        // Last resort: open YouTube in new tab
-        const ytId = MUSIC_PAGES[pageIdx]?.ytId;
-        if (ytId) window.open('https://youtu.be/' + ytId, '_blank');
-      }
-    }, 1200);
-  }
-}
-
-function _startYT(pageIdx, seekTime) {
-  if (!ytApiReady) return;
-  const player = players[pageIdx];
-  if (!player || typeof player.playVideo !== 'function') return;
-  try {
-    if (seekTime != null) player.seekTo(seekTime, true);
-    player.mute();
-    player.setVolume(0);
-    player.playVideo();
-    isPlaying = true;
-    mWidget.classList.add('mw-playing');
-    mBtn.title = 'Pausar música';
-    setTimeout(() => {
-      try { player.unMute(); fadeVolume(player, 0, 45, 2400); } catch(e) {}
-    }, 400);
-  } catch(e) {}
-}
-
-function _fadeAudio(el, from, to, ms) {
-  const steps = 30, interval = ms / steps;
-  let s = 0;
-  const t = setInterval(() => {
-    s++;
-    el.volume = Math.max(0, Math.min(1, from + (to - from) * s / steps));
-    if (s >= steps) clearInterval(t);
-  }, interval);
-}
-
-function _musicSeek(pageIdx, time) {
-  const audioEl = document.getElementById('audio-' + (pageIdx === 13 ? 'zombie' : ''));
-  if (audioEl && !audioEl.paused) { audioEl.currentTime = time; return; }
-  const p = players[pageIdx];
-  if (p) try { p.seekTo(time, true); } catch(e) {}
-}
-
-function tryAutoplay(pageIdx, doPlay) {
-  // Show notice to trigger interaction
-  mNotice.classList.add('show');
-  mNotice.onclick = () => { mNotice.classList.remove('show'); userInteracted = true; doPlay(); };
-  // Also try anyway (some browsers allow)
-  setTimeout(() => {
-    try {
-      players[pageIdx].setVolume(0);
-      players[pageIdx].unMute();
-      players[pageIdx].playVideo();
-      // If it works, fade in
-      setTimeout(() => {
-        try {
-          const state = players[pageIdx].getPlayerState();
-          if (state === YT.PlayerState.PLAYING) {
-            mNotice.classList.remove('show');
-            fadeVolume(players[pageIdx], 0, 75, 2800);
-            isPlaying = true;
-            mWidget.classList.add('mw-playing');
-          }
-        } catch(e) {}
-      }, 800);
-    } catch(e) {}
-  }, 200);
-}
-
-function stopMusic(pageIdx, fadeDur = 2200) {
-  // Stop YT player if it exists for this page
-  if (players[pageIdx]) {
-    const player = players[pageIdx];
-    try {
-      const vol = player.getVolume();
-      fadeVolume(player, vol, 0, fadeDur, () => { try { player.pauseVideo(); } catch(e){} });
-    } catch(e) {}
-  }
-  // Stop native audio for this page
-  const audioId = pageIdx === 13 ? 'audio-zombie' : ('audio-p' + pageIdx);
-  const ael = document.getElementById(audioId);
-  if(ael && !ael.paused){
-    _fadeAudio(ael, ael.volume, 0, fadeDur);
-    setTimeout(() => { try{ ael.pause(); ael.currentTime=0; }catch(e){} }, fadeDur+100);
-  }
-  isPlaying = false;
-  mWidget.classList.remove('mw-playing');
-  if (currentMusicPage === pageIdx) {
-    currentMusicPage = null;
-    setTimeout(() => mWidget.classList.remove('mw-show'), fadeDur + 200);
-  }
-}
-
-// Toggle play/pause
-mBtn.addEventListener('click', () => {
-  userInteracted = true;
-  mNotice.classList.remove('show');
-  const pg = currentMusicPage;
-  if (pg == null) return;
-  // If already playing: toggle pause
-  if (isPlaying) {
-    if (pg === 13) {
-      const a = document.getElementById('audio-zombie');
-      if (a && !a.paused) { a.pause(); isPlaying = false; mWidget.classList.remove('mw-playing'); mBtn.title = 'Reproducir música'; return; }
-    } else if (ytApiReady && players[pg]) {
-      try { players[pg].pauseVideo(); isPlaying = false; mWidget.classList.remove('mw-playing'); mBtn.title = 'Reproducir música'; return; } catch(e) {}
-    }
-  }
-  // Not playing: start now (this click IS a user gesture)
-  _playNow(pg);
 });
 
-// Called by renderPages when page changes
+// ── Detectar cambio de página ──
 window.onMusicPageChange = function(pageIdx, rightIdx) {
-  // En desktop, activar música también si la canción está en la página derecha
-  const activeIdx = (MUSIC_PAGES[pageIdx]) ? pageIdx : (rightIdx != null && MUSIC_PAGES[rightIdx] ? rightIdx : null);
-  const prevPage = currentMusicPage;
-
-  // Stop previous music if leaving a music page
-  if (prevPage !== null && prevPage !== activeIdx) {
-    stopMusic(prevPage, 1200);
-    // Stop any native audio for previous music page
-    const prevAudioId = prevPage === 13 ? 'audio-zombie' : ('audio-p' + prevPage);
-    const prevAudioEl = document.getElementById(prevAudioId);
-    if (prevAudioEl && !prevAudioEl.paused) {
-      _fadeAudio(prevAudioEl, prevAudioEl.volume, 0, 1200);
-      setTimeout(() => { try{ prevAudioEl.pause(); prevAudioEl.currentTime=0; }catch(e){} }, 1300);
+  const active = [pageIdx, rightIdx].find(p => p === 7 || p === 13) ?? null;
+  
+  // Salir de página de música
+  if (currentMusicPage !== null && active !== currentMusicPage) {
+    if (currentMusicPage === 7) hideMidnightCity();
+    if (currentMusicPage === 13 && zombieAudio && !zombieAudio.paused) {
+      zombieAudio.pause();
     }
-    // Reset music-active so IntersectionObserver fires again next visit
-    document.querySelectorAll('.music-trigger.music-active').forEach(el => {
-      el.classList.remove('music-active');
-    });
+    mWidget.classList.remove('mw-show', 'mw-playing');
+    isPlaying = false;
+    currentMusicPage = null;
   }
-
-  const cfg = activeIdx != null ? MUSIC_PAGES[activeIdx] : null;
-  if (cfg) {
-    mWidget.classList.add('mw-show');
-    mLabel.textContent = '\u266a ' + cfg.title;
-    currentMusicPage = activeIdx;
-    if (cfg.autoStart) {
-      // Show tap-to-play notice. Music starts on first user tap (mBtn or notice).
-      mNotice.textContent = '\u25b6 Toca para escuchar';
-      mNotice.classList.add('show');
-      mNotice.style.cursor = 'pointer';
-      mNotice.onclick = function() {
-        mNotice.classList.remove('show');
-        _playNow(activeIdx);
-      };
-    }
-  } else {
+  
+  if (active === 7) showMidnightCity();
+  else if (active !== 13) {
     mWidget.classList.remove('mw-show');
-    mNotice.classList.remove('show');
   }
 };
 
-
-function initMusicTriggers(){
-  const triggers = document.querySelectorAll(".music-trigger");
-  if(!triggers.length) return;
-
-  // Find the scroll container (p-story) inside the current page
-  const storyEl = document.querySelector('#pageR .p-story') || document.querySelector('#pageL .p-story');
-
-  function playZombieAt(time){
-    isPlaying = true;
-    currentMusicPage = 13;
-    mLabel.textContent = '♪ Take Me on the Floor — The Veronicas';
-    mWidget.classList.add('mw-show','mw-playing');
-    mNotice.classList.remove('show');
-    // Try native audio first (archive.org)
-    const audioEl = document.getElementById('audio-zombie');
-    if(audioEl && audioEl.src && !audioEl.src.includes('REEMPLAZAR')){
-      audioEl.currentTime = time || 0;
-      audioEl.volume = 0;
-      audioEl.play()
-        .then(() => _fadeAudio(audioEl, 0, 0.55, 2400))
-        .catch(() => {
-          // Fallback to YT if native fails
-          mWidget.classList.remove('mw-playing');
-          _startYT(13, time);
-        });
-    } else {
-      _startYT(13, time);
-    }
-  }
-
-  // Use pageR as scroll root (it's the actual scroll container now)
-  const scrollRoot = document.getElementById('pageR');
-
-  // IntersectionObserver with pageR as root
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting && !entry.target.classList.contains("music-active")){
-        entry.target.classList.add("music-active");
-        playZombieAt(parseFloat(entry.target.dataset.time) || 0);
+// ── Trigger de zombie: scroll hasta el párrafo ──
+function initMusicTriggers() {
+  const triggers = document.querySelectorAll('.music-trigger');
+  if (!triggers.length) return;
+  const scrollEl = document.getElementById('pageR');
+  if (!scrollEl) return;
+  
+  const check = () => {
+    const top = scrollEl.scrollTop;
+    const h = scrollEl.clientHeight;
+    triggers.forEach(t => {
+      if (t.classList.contains('music-active')) return;
+      let off = 0, el = t;
+      while (el && el !== scrollEl) { off += el.offsetTop; el = el.offsetParent; }
+      if (off < top + h * 0.9) {
+        t.classList.add('music-active');
+        playZombie();
       }
     });
-  }, { root: scrollRoot, threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
-  triggers.forEach(t => observer.observe(t));
-
-  // Scroll-based fallback using pageR
-  if(scrollRoot){
-    const scrollCheck = () => {
-      const scrollTop = scrollRoot.scrollTop;
-      const clientH = scrollRoot.clientHeight;
-      triggers.forEach(t => {
-        if(t.classList.contains('music-active')) return;
-        let offsetTop = 0, el = t;
-        while(el && el !== scrollRoot){ offsetTop += el.offsetTop; el = el.offsetParent; }
-        if(offsetTop < scrollTop + clientH && (offsetTop + t.clientHeight) > scrollTop){
-          t.classList.add('music-active');
-          playZombieAt(parseFloat(t.dataset.time) || 0);
-        }
-      });
-    };
-    scrollRoot.addEventListener('scroll', scrollCheck, {passive:true});
-    setTimeout(scrollCheck, 400);
-  }
-}
-
-// Fade out music when reader reaches the end of a music story
-function initMusicEndTriggers() {
-  document.querySelectorAll('.music-end').forEach(el => {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Fade out whichever music is playing
-          if (currentMusicPage === 7) {
-            // Midnight City — YT player
-            const p = players[7];
-            if (p) try {
-              const vol = p.getVolume();
-              fadeVolume(p, vol, 0, 5000, () => { try{ p.pauseVideo(); }catch(e){} });
-            } catch(e) {}
-          }
-          obs.disconnect();
-        }
-      });
-    }, { threshold: 0.5 });
-    obs.observe(el);
-  });
-}
-
-window.triggerZombieMusic = function() {
-  if (currentMusicPage === 13 && isPlaying) return; // already playing
-  startMusic(13, 0);
-};
-
-/* ══════════════════════════════════════════
-   READER CONTROLS: AA, Bookmark, Search
-══════════════════════════════════════════ */
-
-// ── Progress bar: click drag to page ──
-(function(){
-  const prog = document.getElementById('navProgress');
-  if(!prog) return;
-  prog.addEventListener('input', function(){
-    const target = parseInt(this.value);
-    if(target === (mob()?cur:cur+1) || busy) return;
-    // navigate to target page
-    const newCur = mob() ? target : (target % 2 === 0 ? target : target-1);
-    if(newCur >= 0 && newCur <= maxCur()){
-      cur = newCur;
-      renderPages(cur);
-      updateNav();
-    }
-  });
-})();
-
-// ── Font size toggle (AA button) ──
-(function(){
-  const btn = document.getElementById('rhAA');
-  if(!btn) return;
-  const sizes = ['', 'txt-md', 'txt-lg'];
-  let si = 0;
-  btn.addEventListener('click', function(){
-    document.body.classList.remove(sizes[si]);
-    si = (si+1) % sizes.length;
-    if(sizes[si]) document.body.classList.add(sizes[si]);
-    // Visual feedback
-    btn.style.color = si===0 ? '' : 'rgba(220,185,100,.9)';
-  });
-})();
-
-// ── Bookmark ──
-(function(){
-  const btn = document.getElementById('rhBookmark');
-  if(!btn) return;
-  let bookmarks = JSON.parse(localStorage.getItem('book_bookmarks')||'[]');
-  function syncBtn(){
-    const active = bookmarks.includes(cur);
-    btn.classList.toggle('bookmarked', active);
-    btn.title = active ? 'Quitar marcador' : 'Marcar página';
-  }
-  btn.addEventListener('click', function(){
-    const idx = bookmarks.indexOf(cur);
-    if(idx>=0) bookmarks.splice(idx,1); else bookmarks.push(cur);
-    try{ localStorage.setItem('book_bookmarks', JSON.stringify(bookmarks)); }catch(e){}
-    syncBtn();
-    // Flash animation
-    btn.style.transform = 'scale(1.3)';
-    setTimeout(()=>{ btn.style.transform=''; }, 200);
-  });
-  // Update bookmark button on page change
-  const origUpdateNav = updateNav;
-  // Re-sync on render
-  const origRender = renderPages;
-  window.renderPages = function(idx){
-    origRender(idx);
-    syncBtn();
   };
-  syncBtn();
-})();
+  
+  scrollEl.addEventListener('scroll', check, { passive: true });
+  setTimeout(check, 500);
+}
 
-// ── Search ──
-(function(){
-  const searchBtn = document.getElementById('rhSearch');
-  if(!searchBtn) return;
+function initMusicEndTriggers() {}
 
-  // Create search panel
-  const panel = document.createElement('div');
-  panel.className = 'search-panel';
-  panel.innerHTML = `
-    <input type="text" class="search-input" id="searchInput" placeholder="Buscar en el libro…"/>
-    <div class="search-results" id="searchResults"></div>`;
-  document.body.appendChild(panel);
-
-  const input = document.getElementById('searchInput');
-  const results = document.getElementById('searchResults');
-
-  searchBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    panel.classList.toggle('open');
-    if(panel.classList.contains('open')) input.focus();
-  });
-
-  document.addEventListener('click', function(e){
-    if(!panel.contains(e.target) && e.target !== searchBtn) panel.classList.remove('open');
-  });
-
-  input.addEventListener('input', function(){
-    const q = this.value.trim().toLowerCase();
-    results.innerHTML = '';
-    if(q.length < 2){ return; }
-    const matches = [];
-    PAGES.forEach(function(html, idx){
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html;
-      const text = tmp.textContent;
-      const lo = text.toLowerCase();
-      let pos = lo.indexOf(q);
-      if(pos >= 0){
-        const snippet = text.substring(Math.max(0,pos-30), pos+60).trim();
-        const hi = snippet.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\]/g,'\$&')+')','gi'),'<strong>$1</strong>');
-        matches.push({idx, snippet: hi, page: idx+1});
-      }
-    });
-    if(matches.length===0){
-      results.innerHTML = '<div class="search-no-results">Sin resultados</div>';
-    } else {
-      matches.slice(0,12).forEach(function(m){
-        const el = document.createElement('div');
-        el.className = 'search-result-item';
-        el.innerHTML = '<span style="color:rgba(140,165,200,.55);margin-right:6px">p.'+m.page+'</span>'+m.snippet;
-        el.addEventListener('click', function(){
-          panel.classList.remove('open');
-          const newCur = mob() ? m.idx : (m.idx%2===0?m.idx:m.idx-1);
-          if(newCur>=0 && newCur<=maxCur()){
-            cur=newCur; renderPages(cur); updateNav();
-          }
-        });
-        results.appendChild(el);
-      });
-    }
-  });
-})();
+function stopAllMusic() {
+  hideMidnightCity();
+  if (zombieAudio && !zombieAudio.paused) zombieAudio.pause();
+  mWidget.classList.remove('mw-show', 'mw-playing');
+  isPlaying = false;
+  currentMusicPage = null;
+  document.querySelectorAll('.music-trigger').forEach(t => t.classList.remove('music-active'));
+}
 
 </script>
 

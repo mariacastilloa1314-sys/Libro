@@ -2004,11 +2004,12 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
   transform: translateX(-50%) rotate(-2deg);
   width: 58px;
   height: 15px;
-  background: rgba(200,185,140,.50);
+  background: rgba(210,195,150,.65);
   border-radius: 1px;
-  z-index: 5;
-  box-shadow: inset 0 0 0 1px rgba(160,140,100,.22),
-              0 1px 3px rgba(0,0,0,.10);
+  z-index: 20;
+  box-shadow: inset 0 0 0 1px rgba(160,140,100,.30),
+              0 1px 4px rgba(0,0,0,.15);
+  pointer-events: none;
 }
 /* Tape bottom-right corner */
 .p-doodle-real::after {
@@ -2019,24 +2020,21 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
   transform: rotate(3deg);
   width: 46px;
   height: 13px;
-  background: rgba(200,185,140,.42);
+  background: rgba(210,195,150,.60);
   border-radius: 1px;
-  z-index: 5;
-  box-shadow: inset 0 0 0 1px rgba(160,140,100,.18),
-              0 1px 2px rgba(0,0,0,.08);
+  z-index: 20;
+  box-shadow: inset 0 0 0 1px rgba(160,140,100,.25),
+              0 1px 3px rgba(0,0,0,.10);
+  pointer-events: none;
 }
-/* Extra tape: left side, diagonal */
-.p-doodle-real .doodle-tape-extra {
+/* Extra tapes injected via JS */
+.doodle-tape {
   position: absolute;
-  top: 38%;
-  left: 12px;
-  transform: rotate(-90deg) translateX(-50%);
-  width: 40px;
-  height: 12px;
-  background: rgba(200,185,140,.38);
+  background: rgba(210,195,150,.58);
   border-radius: 1px;
-  z-index: 5;
-  box-shadow: inset 0 0 0 1px rgba(160,140,100,.15);
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(160,140,100,.28), 0 1px 3px rgba(0,0,0,.10);
 }
 
 /* ── Notas al pie ── */
@@ -2786,9 +2784,13 @@ function startTatu(seekSecs) {
   currentMusicPage = 11;
   mLabel.textContent = '\u266a All the Things She Said \u2014 t.A.T.u';
   mWidget.classList.add('mw-show', 'mw-playing');
-
-  const id = 't.-a.-t.u-all-the-things-she-said-sub-espanol-heated-rivalry';
-  _playArchiveItem(audio, id, seekSecs != null ? seekSecs : 82);
+  audio.src = 'https://dn711202.ca.archive.org/0/items/t.-a.-t.u-all-the-things-she-said-sub-espanol-heated-rivalry/t.A.T.u%20-%20%20All%20The%20Things%20She%20Said%20%20Sub%20Espa%C3%B1ol%20%20Heated%20Rivalry.mp3';
+  audio.load();
+  setTimeout(() => {
+    audio.currentTime = seekSecs != null ? seekSecs : 82;
+    audio.volume = 0;
+    audio.play().then(() => fadeAudio(audio, 0, 0.55, 1800)).catch(()=>{});
+  }, 400);
 }
 
 function startTokioHotel() {
@@ -2797,52 +2799,45 @@ function startTokioHotel() {
   currentMusicPage = 22;
   mLabel.textContent = '\u266a Pain of Love \u2014 Tokio Hotel';
   mWidget.classList.add('mw-show', 'mw-playing');
-
-  const id = 'tokio-hotel-pain-of-love-letra-en-espanol';
-  _playArchiveItem(audio, id, 7);
+  audio.src = 'https://dn711003.ca.archive.org/0/items/tokio-hotel-pain-of-love-letra-en-espanol/Tokio%20Hotel%20-%20Pain%20of%20love%20Letra%20en%20Espa%C3%B1ol.mp3';
+  audio.load();
+  setTimeout(() => {
+    audio.currentTime = 7;
+    audio.volume = 0;
+    audio.play().then(() => fadeAudio(audio, 0, 0.55, 2000)).catch(()=>{});
+  }, 400);
 }
 
-// Play from archive.org using HTML directory listing (avoids CORS XML issue)
+// Play from archive.org - fetch XML to get exact filename
 function _playArchiveItem(audioEl, identifier, seekSecs) {
-  // Try fetching the directory listing page to find the MP3 filename
-  const dirUrl = 'https://archive.org/download/' + identifier + '/';
-  fetch(dirUrl)
-    .then(r => r.text())
-    .then(html => {
-      // Find .mp3 href in listing
-      const match = html.match(/href="([^"]+\.mp3)"/i);
-      if (!match) throw new Error('No MP3 in listing');
-      // href may be just the filename or full path
-      let filename = match[1];
-      if (!filename.startsWith('http')) {
-        filename = 'https://archive.org/download/' + identifier + '/' + filename;
-      }
-      audioEl.src = filename;
-      audioEl.load();
-      return _waitAndPlay(audioEl, seekSecs);
+  // Use no-cors metadata approach: fetch the _files.xml which lists MP3s
+  const xmlUrl = 'https://archive.org/download/' + identifier + '/' + identifier + '_files.xml';
+  fetch(xmlUrl, {mode:'cors'})
+    .then(r => { if(!r.ok) throw new Error(r.status); return r.text(); })
+    .then(txt => {
+      const m = txt.match(/name="([^"]+\.mp3)"/i);
+      if (!m) throw new Error('no mp3');
+      const url = 'https://archive.org/download/' + identifier + '/' + encodeURIComponent(m[1]);
+      return _setAndPlay(audioEl, url, seekSecs);
     })
     .catch(() => {
-      // Fallback 1: identifier.mp3
-      audioEl.src = 'https://archive.org/download/' + identifier + '/' + identifier + '.mp3';
-      audioEl.load();
-      _waitAndPlay(audioEl, seekSecs).catch(() => {
-        // Fallback 2: try serve/download redirect
-        audioEl.src = 'https://archive.org/serve/' + identifier;
-        audioEl.load();
-        _waitAndPlay(audioEl, seekSecs).catch(()=>{});
-      });
+      // Fallback: try the identifier as the filename (common pattern)
+      const url = 'https://archive.org/download/' + identifier + '/' + identifier + '.mp3';
+      _setAndPlay(audioEl, url, seekSecs);
     });
 }
 
-function _waitAndPlay(audioEl, seekSecs) {
-  return new Promise((resolve, reject) => {
+function _setAndPlay(audioEl, url, seekSecs) {
+  audioEl.src = url;
+  audioEl.load();
+  return new Promise((res, rej) => {
     setTimeout(() => {
       audioEl.currentTime = seekSecs || 0;
       audioEl.volume = 0;
       audioEl.play()
-        .then(() => { fadeAudio(audioEl, 0, 0.55, 2000); resolve(); })
-        .catch(reject);
-    }, 400);
+        .then(() => { fadeAudio(audioEl, 0, 0.55, 2000); res(); })
+        .catch(rej);
+    }, 500);
   });
 }
 
@@ -2881,27 +2876,56 @@ function stopAllMusic() {
    REACCIONES ANÓNIMAS
 ══════════════════════════════ */
 (function() {
-  const ANIMALS = [
-    'Zombi anónimo','Gato anónimo','Vaca anónima','Fantasma anónimo',
-    'Pulpo anónimo','Cuervo anónimo','Lobo anónimo','Araña anónima',
-    'Murciélago anónimo','Serpiente anónima','Ballena anónima','Búho anónimo'
+  const SPIRITS = [
+    'Alma anónima','Sombra anónima','Espíritu libre y anónimo',
+    'Zombi anónimo','Pensador anónimo','Espectro anónimo',
+    'Gatito anónimo','Pez payaso anónimo','Detector de humo anónimo'
   ];
 
-  // Assign a persistent name per device
+  // Name: persistent per device, but user can change it
   let myName = localStorage.getItem('reaction_name');
   if (!myName) {
-    myName = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+    myName = SPIRITS[Math.floor(Math.random() * SPIRITS.length)];
     localStorage.setItem('reaction_name', myName);
   }
-  document.getElementById('reaction-anon-name').textContent = myName;
+  
+  // Render name as clickable selector
+  const nameEl = document.getElementById('reaction-anon-name');
+  function renderName() {
+    nameEl.innerHTML = '<span style="cursor:pointer;border-bottom:1px dashed rgba(107,0,0,.4)" title="Cambiar nombre">' + myName + ' ✎</span>';
+    nameEl.querySelector('span').onclick = () => {
+      // Show a mini selector
+      const sel = document.createElement('select');
+      sel.style.cssText = 'font-family:Caveat,cursive;font-size:.9em;color:#3d0000;background:#f6f0e2;border:1px solid rgba(107,0,0,.3);border-radius:6px;padding:2px 4px;';
+      SPIRITS.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        if (s === myName) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      sel.onchange = () => {
+        myName = sel.value;
+        localStorage.setItem('reaction_name', myName);
+        nameEl.innerHTML = '';
+        nameEl.appendChild(sel);
+        renderName();
+      };
+      nameEl.innerHTML = '';
+      nameEl.appendChild(sel);
+    };
+  }
+  renderName();
 
   let activeParagraphId = null;
 
   // ── Attach reaction buttons to all story paragraphs ──
   function attachReactions() {
+    const storyEl = document.querySelector('#pageR .story-atmos-layer');
+    const storyId = storyEl ? storyEl.id.replace('sa_','') : 'pg';
     document.querySelectorAll('#pageR .p-story .pb, #pageR .p-story .pd').forEach((p, i) => {
       if (p.dataset.reactionId) return; // already attached
-      const id = 'rp_' + Date.now() + '_' + i;
+      // Stable ID: storyId + paragraph index (not timestamp)
+      const id = 'rp_' + storyId + '_' + i;
       p.dataset.reactionId = id;
 
       // Wrap in relative container
@@ -3010,7 +3034,30 @@ function stopAllMusic() {
   window.renderPages = function(idx) {
     _origRender(idx);
     setTimeout(attachReactions, 150);
+    setTimeout(_addTapeStrips, 100);
   };
+
+  function _addTapeStrips() {
+    document.querySelectorAll('.p-doodle-real').forEach(function(el) {
+      if (el.querySelector('.doodle-tape')) return;
+      [
+        {t:'40%', l:'10px', w:'38px', h:'12px', r:'-88deg'},
+        {t:'20px', l:'auto', ri:'24px', w:'44px', h:'13px', r:'1.5deg'},
+        {t:'auto', b:'35%', l:'14px', w:'36px', h:'11px', r:'92deg'},
+      ].forEach(function(cfg) {
+        var d = document.createElement('div');
+        d.className = 'doodle-tape';
+        d.style.position = 'absolute';
+        d.style.width = cfg.w; d.style.height = cfg.h;
+        d.style.transform = 'rotate('+cfg.r+')';
+        if (cfg.t && cfg.t !== 'auto') d.style.top = cfg.t; else d.style.top = 'auto';
+        if (cfg.b) d.style.bottom = cfg.b;
+        if (cfg.l && cfg.l !== 'auto') d.style.left = cfg.l; else d.style.left = 'auto';
+        if (cfg.ri) d.style.right = cfg.ri;
+        el.appendChild(d);
+      });
+    });
+  }
 
   // Also attach on first load
   document.addEventListener('DOMContentLoaded', () => setTimeout(attachReactions, 500));

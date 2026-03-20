@@ -2018,6 +2018,86 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
 .easter-tap-wrap{display:block;text-align:center;margin:1.6rem 0;cursor:pointer;}
 .easter-tap-btn{font-family:'Caveat',cursive;font-size:1rem;color:rgba(184,149,106,.80);border-bottom:1.5px dashed rgba(184,149,106,.50);position:relative;}
 .easter-tap-annotation{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.75em;color:rgba(184,149,106,.60);white-space:nowrap;pointer-events:none;}
+
+/* ── Trailer overlay ── */
+#trailer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #07080d;
+  z-index: 6000;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#trailer-overlay.open { display: flex; }
+#trailer-close {
+  position: fixed;
+  top: 16px; right: 20px;
+  background: none; border: none;
+  color: rgba(200,190,170,.35);
+  font-size: .85rem;
+  cursor: pointer;
+  z-index: 6001;
+  font-family: 'Caveat', cursive;
+  letter-spacing: .05em;
+  transition: color .3s;
+}
+#trailer-close:hover { color: rgba(200,190,170,.80); }
+#trailer-body {
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+}
+#trailer-intro {
+  font-family: 'Caveat', cursive;
+  font-size: .85rem;
+  color: rgba(200,190,170,.45);
+  letter-spacing: .06em;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.trailer-line {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  color: rgba(220,210,190,.0);
+  line-height: 1.75;
+  margin-bottom: .15rem;
+  transition: color 1.4s ease;
+  font-style: italic;
+}
+.trailer-line.speaker {
+  font-family: 'Caveat', cursive;
+  font-size: .70rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(184,149,106,.0);
+  font-style: normal;
+  margin-bottom: .6rem;
+  transition: color 1.4s ease;
+}
+.trailer-line.visible { color: rgba(220,210,190,.88); }
+.trailer-line.speaker.visible { color: rgba(184,149,106,.70); }
+#trailer-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(.95rem, 3vw, 1.15rem);
+  color: rgba(184,149,106,.0);
+  letter-spacing: .18em;
+  margin-top: 2.8rem;
+  transition: color 2s ease;
+}
+#trailer-title.visible { color: rgba(184,149,106,.90); }
+#trailer-subtitle {
+  font-family: 'Caveat', cursive;
+  font-size: .78rem;
+  color: rgba(200,190,170,.0);
+  letter-spacing: .08em;
+  margin-top: .5rem;
+  transition: color 2s ease;
+}
+#trailer-subtitle.visible { color: rgba(200,190,170,.45); }
 </style>
 </head>
 <body>
@@ -2042,7 +2122,7 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
     <button class="rh-btn" id="rhBookmark" title="Marcar página">
       <svg width="15" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
     </button>
-    <button class="rh-btn" id="rhSearch" title="Buscar">
+    <button class="rh-btn" id="rhSearch" title="Buscar" onclick="openTrailer()">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
   </div>
@@ -2469,6 +2549,51 @@ document.querySelectorAll('a,button,input,.open-hint,.book-closed,.zone').forEac
       if (o) { o.style.display = 'none'; o.classList.remove('open'); }
       var a = document.getElementById('audio-ticket');
       if (a && !a.paused) { a.pause(); a.currentTime = 0; }
+    });
+  });
+
+  // ── Trailer ──
+  var _trailerTimer = null;
+  function openTrailer() {
+    var o = document.getElementById('trailer-overlay');
+    if (!o) return;
+    o.style.display = 'flex'; o.classList.add('open');
+    // Reset
+    document.querySelectorAll('.trailer-line, #trailer-title, #trailer-subtitle').forEach(function(el) {
+      el.classList.remove('visible');
+    });
+    document.getElementById('trailer-intro').style.opacity = '0';
+    // Sequence
+    var delay = 800;
+    // Intro text first
+    setTimeout(function() {
+      document.getElementById('trailer-intro').style.opacity = '1';
+    }, delay);
+    delay += 2200;
+    // Each line
+    var lines = document.querySelectorAll('.trailer-line');
+    lines.forEach(function(line) {
+      setTimeout(function() { line.classList.add('visible'); }, delay);
+      delay += line.classList.contains('speaker') ? 600 : 1800;
+    });
+    // Title
+    setTimeout(function() {
+      document.getElementById('trailer-title').classList.add('visible');
+    }, delay + 600);
+    setTimeout(function() {
+      document.getElementById('trailer-subtitle').classList.add('visible');
+    }, delay + 1400);
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('trailer-close');
+    if (btn) btn.addEventListener('click', function() {
+      var o = document.getElementById('trailer-overlay');
+      o.style.display = 'none'; o.classList.remove('open');
+    });
+    document.getElementById('trailer-overlay').addEventListener('click', function(e) {
+      if (e.target === e.currentTarget) {
+        this.style.display = 'none'; this.classList.remove('open');
+      }
     });
   });
 </script>
@@ -3018,6 +3143,36 @@ function stopAllMusic() {
     <p>Eso te pasa por tocar.</p>
     <p>Así funciona la curiosidad:</p>
     <p>te puede llevar justo a lo que no estabas buscando.</p>
+  </div>
+</div>
+
+<div id="trailer-overlay">
+  <button id="trailer-close">&#x2715; cerrar</button>
+  <div id="trailer-body">
+    <div id="trailer-intro">Hola, gracias por curiosear.<br>Estoy escribiendo una novela. De verdad. (Ha-ha)<br>Aquí, el trailer de lo que se viene.</div>
+    <p class="trailer-line speaker" data-idx="0">martha</p>
+    <p class="trailer-line" data-idx="1">Mi novio había muerto y mis ganas de vivir se esfumaron con él.</p>
+    <p class="trailer-line speaker" data-idx="2">martha</p>
+    <p class="trailer-line" data-idx="3">No soy la psicópata que pintan los medios. Estoy loca, pero no de la forma que imaginan.</p>
+    <p class="trailer-line speaker" data-idx="4">martha</p>
+    <p class="trailer-line" data-idx="5">Yo no maté a nadie.</p>
+    <p class="trailer-line speaker" data-idx="6">ren</p>
+    <p class="trailer-line" data-idx="7">Un día, una voz resonó en mi interior.</p>
+    <p class="trailer-line speaker" data-idx="8">ren</p>
+    <p class="trailer-line" data-idx="9">«Hola».</p>
+    <p class="trailer-line speaker" data-idx="10">ren</p>
+    <p class="trailer-line" data-idx="11">Vive… por favor, vive y déjame descansar, mi amor.</p>
+    <p class="trailer-line speaker" data-idx="12">ren</p>
+    <p class="trailer-line" data-idx="13">¿Por qué todos ustedes son tan feos?</p>
+    <p class="trailer-line speaker" data-idx="14">ren</p>
+    <p class="trailer-line" data-idx="15">Mírenme.</p>
+    <p class="trailer-line speaker" data-idx="16">andrés</p>
+    <p class="trailer-line" data-idx="17">¿La locura es contagiosa o me enamoré a primera vista?</p>
+    <p class="trailer-line speaker" data-idx="18">martha</p>
+    <p class="trailer-line" data-idx="19">¿No me creen? Traigan mi espejo.</p>
+    
+    <p id="trailer-title">¿Quién es Ren?</p>
+    <p id="trailer-subtitle">Próximamente.</p>
   </div>
 </div>
 </body>

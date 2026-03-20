@@ -497,14 +497,17 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 ═══════════════════════════════════════ */
 .nav-row{
   display:flex;align-items:center;gap:clamp(.5rem,1.8vw,1.4rem);
-  z-index:100;opacity:0;transition:opacity .5s;
-  background:rgba(237,229,202,.88);
-  backdrop-filter:blur(6px);
+  position:fixed;bottom:clamp(10px,2.5vh,20px);left:50%;transform:translateX(-50%);
+  z-index:1000;opacity:0;transition:opacity .5s;
+  background:rgba(237,229,202,.92);
+  backdrop-filter:blur(8px);
   border-radius:50px;
-  padding:clamp(3px,1vw,7px) clamp(8px,2vw,16px);
-  border:1px solid rgba(148,12,12,.18);
-  box-shadow:0 2px 14px rgba(0,0,0,.10);
+  padding:clamp(4px,1.2vw,8px) clamp(10px,2.5vw,20px);
+  border:1px solid rgba(148,12,12,.22);
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  pointer-events:none;
 }
+.nav-row.show{pointer-events:auto;}
 .nav-row.show{opacity:1;pointer-events:auto;}
 .nav-btn{
   background:transparent;border:none;
@@ -1153,6 +1156,54 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 
 /* Tachon */
 .tachon-block { text-decoration:line-through; opacity:.7; }
+
+/* ── Music tap buttons ── */
+.music-tap-wrap{position:relative;display:inline-block;cursor:pointer;margin-top:1.3em;z-index:60;}
+.music-tap-annotation{position:absolute;bottom:100%;left:0;font-family:'Caveat',cursive;font-size:0.74em;font-weight:700;color:#3d0000;white-space:nowrap;pointer-events:none;line-height:1.3;}
+.music-tap-btn{display:inline;color:#6b0d0d;font-style:italic;font-weight:600;cursor:pointer;border-bottom:1.5px dashed #6b0d0d;padding:0 2px;}
+.music-tap-btn:hover,.music-tap-btn:active{color:#3a0808;border-bottom-style:solid;}
+.music-tap-wrap.played .music-tap-annotation{display:none;}
+
+/* ── Footnotes ── */
+.footnote-section{margin-top:2rem;padding-top:.5rem;}
+.footnote-rule{border:none;border-top:1px solid rgba(30,50,96,.25);width:35%;margin:0 0 .5rem 0;}
+.footnote-text{font-family:'Caveat',cursive;font-size:0.78em;color:#1e3260;line-height:1.5;margin:0;opacity:.80;}
+.footnote-text sup{font-size:.7em;vertical-align:super;margin-right:1px;}
+.story-scroll sup{font-size:.65em;vertical-align:super;color:rgba(107,0,0,.70);}
+
+/* ── Doodle tape ── */
+.p-doodle-real::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%) rotate(-2deg);width:58px;height:15px;background:rgba(210,195,150,.65);border-radius:1px;z-index:20;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(160,140,100,.30);}
+.p-doodle-real::after{content:'';position:absolute;bottom:20px;right:18px;transform:rotate(3deg);width:46px;height:13px;background:rgba(210,195,150,.60);border-radius:1px;z-index:20;pointer-events:none;}
+.doodle-tape{background:rgba(210,195,150,.58);border-radius:1px;z-index:20;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(160,140,100,.28);}
+
+/* ── Reaction button (inline, per paragraph) ── */
+.reaction-btn{position:absolute;right:0;top:2px;background:none;border:none;color:rgba(107,0,0,.40);font-size:10px;cursor:pointer;opacity:0.4;transition:opacity .2s;z-index:10;padding:0 2px;font-family:sans-serif;line-height:1.5;}
+.pb:hover .reaction-btn,.pd:hover .reaction-btn{opacity:1;}
+
+/* ── Reaction modal ── */
+#reaction-modal-overlay{display:none;position:fixed;inset:0;background:rgba(18,24,31,.60);z-index:2000;align-items:flex-end;justify-content:center;}
+#reaction-modal-overlay.open{display:flex;}
+#reaction-modal{background:#f6f0e2;border-radius:18px 18px 0 0;padding:0 0 32px;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;box-shadow:0 -4px 32px rgba(0,0,0,.30);animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#reaction-modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:1px solid rgba(107,0,0,.10);position:sticky;top:0;background:#f6f0e2;z-index:2;}
+#reaction-modal-title{font-family:'Caveat',cursive;font-size:1.1rem;color:#3d0000;font-weight:700;}
+#reaction-cancel{background:rgba(107,0,0,.08);border:none;color:rgba(107,0,0,.60);font-size:.9rem;cursor:pointer;padding:4px 9px;border-radius:50%;}
+#reaction-context-text{font-family:'Caveat',cursive;font-size:.82em;color:rgba(30,50,96,.55);padding:8px 18px;font-style:italic;border-left:2px solid rgba(107,0,0,.15);margin:10px 18px 0;line-height:1.4;}
+#reaction-existing{padding:6px 18px 0;display:flex;flex-direction:column;gap:8px;}
+.reaction-existing-bubble{background:rgba(255,255,255,.55);border-radius:10px;padding:8px 12px;font-family:'Caveat',cursive;font-size:.88em;color:#2a0808;line-height:1.45;}
+.reaction-existing-author{font-size:.72em;color:rgba(107,0,0,.60);font-weight:700;margin-bottom:3px;}
+#reaction-name-section{padding:12px 18px 4px;}
+#reaction-name-label{font-family:'Caveat',cursive;font-size:.80em;color:rgba(107,0,0,.65);margin-bottom:6px;font-weight:700;}
+#reaction-name-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.name-chip{font-family:'Caveat',cursive;font-size:.80em;padding:4px 10px;border-radius:14px;border:1.5px solid rgba(107,0,0,.22);background:rgba(255,255,255,.50);color:rgba(107,0,0,.65);cursor:pointer;transition:all .15s;}
+.name-chip.selected{background:#6b0000;color:#f6f0e2;border-color:#6b0000;}
+#reaction-modal-title-2{font-family:'Caveat',cursive;font-size:.85em;color:rgba(107,0,0,.60);padding:12px 18px 4px;}
+#reaction-textarea{width:calc(100% - 36px);min-height:80px;background:rgba(255,255,255,.65);border:1.5px solid rgba(107,0,0,.18);border-radius:10px;padding:10px 12px;font-family:'Caveat',cursive;font-size:1rem;color:#1e3260;resize:none;box-sizing:border-box;line-height:1.5;margin:0 18px;display:block;}
+#reaction-textarea:focus{outline:none;border-color:rgba(107,0,0,.40);}
+#reaction-modal-footer{padding:10px 18px 0;display:flex;justify-content:flex-end;}
+#reaction-submit{background:#6b0000;color:#f6f0e2;border:none;border-radius:20px;padding:9px 26px;font-family:'Caveat',cursive;font-size:1rem;font-weight:700;cursor:pointer;}
+#reaction-submit:active{background:#3d0000;}
+.tachon-block{text-decoration:line-through;opacity:.7;}
 </style>
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
@@ -1736,6 +1787,21 @@ function stopAllMusic() {
 <audio id="audio-evil-morty" preload="none"
   src="https://archive.org/download/evil-morty-theme-season-5-version-rick-morty-unreleased-music/Evil%20Morty%20Theme%20(Season%205%20Version)%20-%20Rick%20%26%20Morty%20Unreleased%20Music.mp3"></audio>
 
+
+    <div id="reaction-existing"></div>
+    <div id="reaction-name-section">
+      <div id="reaction-name-label">¿Quién eres tú?</div>
+      <div id="reaction-name-chips"></div>
+    </div>
+    <div id="reaction-modal-title-2">Escribe tu reacción — ¿encontraste algún error?</div>
+    <textarea id="reaction-textarea" placeholder="Sin filtros. Nadie sabe quién eres." maxlength="280"></textarea>
+    <div id="reaction-modal-footer">
+      <button id="reaction-submit">dejar reacción</button>
+    </div>
+  </div>
+</div>
+
+
 <!-- Modal reacciones -->
 <div id="reaction-modal-overlay">
   <div id="reaction-modal">
@@ -1756,6 +1822,7 @@ function stopAllMusic() {
     </div>
   </div>
 </div>
+
 <script>
 (function() {
   var SPIRITS = [
@@ -1764,87 +1831,104 @@ function stopAllMusic() {
     'Gatito anónimo','Pez payaso anónimo','Detector de humo anónimo'
   ];
   var myName = localStorage.getItem('reaction_name');
-  if (!myName || SPIRITS.indexOf(myName)<0) {
-    myName = SPIRITS[Math.floor(Math.random()*SPIRITS.length)];
+  if (!myName || SPIRITS.indexOf(myName) < 0) {
+    myName = SPIRITS[Math.floor(Math.random() * SPIRITS.length)];
     localStorage.setItem('reaction_name', myName);
   }
   var activeParagraphId = null;
+
   function renderChips() {
     var chips = document.getElementById('reaction-name-chips');
-    if (!chips) return; chips.innerHTML = '';
+    if (!chips) return;
+    chips.innerHTML = '';
     SPIRITS.forEach(function(name) {
       var c = document.createElement('button');
-      c.className = 'name-chip' + (name===myName?' selected':'');
+      c.className = 'name-chip' + (name === myName ? ' selected' : '');
       c.textContent = name;
-      c.onclick = function() { myName=name; localStorage.setItem('reaction_name',myName); renderChips(); };
+      c.onclick = function() { myName = name; localStorage.setItem('reaction_name', myName); renderChips(); };
       chips.appendChild(c);
     });
   }
+
   function renderExisting(paraId) {
     var el = document.getElementById('reaction-existing');
     if (!el) return;
-    var comments = JSON.parse(localStorage.getItem('reactions_'+paraId)||'[]');
+    var comments = JSON.parse(localStorage.getItem('reactions_' + paraId) || '[]');
     el.innerHTML = '';
     if (!comments.length) {
       el.innerHTML = '<p style="font-family:Caveat,cursive;font-size:.8em;color:rgba(107,0,0,.4);padding:6px 18px;font-style:italic">Sé el primero en reaccionar aquí.</p>';
       return;
     }
     comments.forEach(function(c) {
-      var b = document.createElement('div'); b.className = 'reaction-existing-bubble';
-      b.innerHTML = '<div class="reaction-existing-author">'+esc(c.author)+'</div>'+esc(c.text);
+      var b = document.createElement('div');
+      b.className = 'reaction-existing-bubble';
+      b.innerHTML = '<div class="reaction-existing-author">' + esc(c.author) + '</div>' + esc(c.text);
       el.appendChild(b);
     });
   }
+
   function openModal(paraId, paraText) {
     activeParagraphId = paraId;
     var overlay = document.getElementById('reaction-modal-overlay');
     var ta = document.getElementById('reaction-textarea');
     var ctx = document.getElementById('reaction-context-text');
-    if (ctx) ctx.textContent = '“'+(paraText||'').slice(0,90)+((paraText||'').length>90?'…':'')+'”';
-    ta.value = ''; renderChips(); renderExisting(paraId);
+    if (ctx) ctx.textContent = '“' + (paraText || '').slice(0, 90) + ((paraText || '').length > 90 ? '…' : '') + '”';
+    ta.value = '';
+    renderChips();
+    renderExisting(paraId);
     overlay.classList.add('open');
-    setTimeout(function(){ ta.focus(); }, 350);
+    setTimeout(function() { ta.focus(); }, 350);
   }
+
   document.getElementById('reaction-submit').addEventListener('click', function() {
     var ta = document.getElementById('reaction-textarea');
     var text = ta.value.trim();
     if (!text || !activeParagraphId) return;
-    var key = 'reactions_'+activeParagraphId;
-    var existing = JSON.parse(localStorage.getItem(key)||'[]');
-    existing.push({text:text, author:myName, ts:Date.now()});
+    var key = 'reactions_' + activeParagraphId;
+    var existing = JSON.parse(localStorage.getItem(key) || '[]');
+    existing.push({ text: text, author: myName, ts: Date.now() });
     localStorage.setItem(key, JSON.stringify(existing));
-    var btn = document.querySelector('[data-reaction-id="'+activeParagraphId+'"] .reaction-btn');
-    if (btn) { btn.innerHTML = '&#128172;'+existing.length; btn.style.opacity='1'; }
-    ta.value = ''; renderExisting(activeParagraphId);
+    var btn = document.querySelector('[data-reaction-id="' + activeParagraphId + '"] .reaction-btn');
+    if (btn) { btn.innerHTML = '&#128172;' + existing.length; btn.style.opacity = '1'; }
+    ta.value = '';
+    renderExisting(activeParagraphId);
   });
+
   document.getElementById('reaction-cancel').addEventListener('click', closeModal);
   document.getElementById('reaction-modal-overlay').addEventListener('click', function(e) {
-    if (e.target===e.currentTarget) closeModal();
+    if (e.target === e.currentTarget) closeModal();
   });
+
   function closeModal() {
     document.getElementById('reaction-modal-overlay').classList.remove('open');
     document.getElementById('reaction-textarea').value = '';
     activeParagraphId = null;
   }
+
   function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
   function attachReactions() {
     var storyEl = document.querySelector('#pageR .story-atmos-layer');
-    var storyId = storyEl ? storyEl.id.replace('sa_','') : 'pg';
+    var storyId = storyEl ? storyEl.id.replace('sa_', '') : 'pg';
     document.querySelectorAll('#pageR .p-story .pb, #pageR .p-story .pd').forEach(function(p, i) {
       if (p.dataset.reactionId) return;
-      var id = 'rp_'+storyId+'_'+i;
+      var id = 'rp_' + storyId + '_' + i;
       p.dataset.reactionId = id;
       p.style.position = 'relative';
-      var count = JSON.parse(localStorage.getItem('reactions_'+id)||'[]').length;
+      var count = JSON.parse(localStorage.getItem('reactions_' + id) || '[]').length;
       var btn = document.createElement('button');
       btn.className = 'reaction-btn';
-      btn.innerHTML = count>0 ? '&#128172;'+count : '&#128172;';
-      btn.style.opacity = count>0 ? '1' : '0.35';
-      btn.title = 'Ver reacciones';
-      btn.addEventListener('click', function(e) { e.stopPropagation(); openModal(id, p.textContent.trim()); });
+      btn.innerHTML = count > 0 ? '&#128172;' + count : '&#128172;';
+      btn.style.opacity = count > 0 ? '1' : '0.35';
+      btn.title = 'Reaccionar';
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openModal(id, p.textContent.trim());
+      });
       p.appendChild(btn);
     });
   }
+
   function addTapeStrips() {
     document.querySelectorAll('.p-doodle-real').forEach(function(el) {
       if (el.querySelector('.doodle-tape')) return;
@@ -1852,7 +1936,8 @@ function stopAllMusic() {
        {t:'20px',ri:'24px',w:'44px',h:'13px',r:'1.5deg'},
        {b:'35%',l:'14px',w:'36px',h:'11px',r:'92deg'}
       ].forEach(function(cfg) {
-        var d = document.createElement('div'); d.className = 'doodle-tape';
+        var d = document.createElement('div');
+        d.className = 'doodle-tape';
         d.style.cssText = 'position:absolute;top:'+(cfg.t||'auto')+';bottom:'+(cfg.b||'auto')+
           ';left:'+(cfg.l||'auto')+';right:'+(cfg.ri||'auto')+
           ';width:'+cfg.w+';height:'+cfg.h+';transform:rotate('+cfg.r+')';
@@ -1860,14 +1945,17 @@ function stopAllMusic() {
       });
     });
   }
+
   var _origRender = window.renderPages;
   window.renderPages = function(idx) {
     _origRender(idx);
-    setTimeout(attachReactions, 150);
+    setTimeout(attachReactions, 200);
     setTimeout(addTapeStrips, 100);
   };
-  document.addEventListener('DOMContentLoaded', function() { setTimeout(attachReactions, 500); });
+
+  document.addEventListener('DOMContentLoaded', function() { setTimeout(attachReactions, 600); });
 })();
 </script>
+
 </body>
 </html>

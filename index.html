@@ -2069,10 +2069,7 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
 }
 
 /* ── Trailer ── */
-#trailer-overlay{display:none;position:fixed;inset:0;z-index:6000;
-  background:repeating-linear-gradient(transparent,transparent 27px,rgba(148,174,210,.18) 27px,rgba(148,174,210,.18) 28px),
-  radial-gradient(ellipse at 20% 10%,rgba(230,210,160,.32) 0%,transparent 38%),#f0ead8;
-  overflow:hidden;flex-direction:column;align-items:center;justify-content:center;}
+#trailer-overlay{display:none;position:fixed;inset:0;z-index:6000;background:repeating-linear-gradient(transparent,transparent 27px,rgba(148,174,210,.18) 27px,rgba(148,174,210,.18) 28px),radial-gradient(ellipse at 20% 10%,rgba(230,210,160,.32) 0%,transparent 38%),#f0ead8;overflow:hidden;flex-direction:column;align-items:center;justify-content:center;}
 #trailer-overlay.open{display:flex;}
 #trailer-close{position:fixed;top:14px;right:18px;background:none;border:none;color:rgba(107,0,0,.35);font-size:.80rem;cursor:pointer;z-index:6001;font-family:'Caveat',cursive;}
 #trailer-intro-wrap{text-align:center;padding:2rem;}
@@ -2081,145 +2078,24 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
 .trailer-tap-hint{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.72em;color:rgba(107,0,0,.45);white-space:nowrap;pointer-events:none;}
 #trailer-stage{position:fixed;inset:0;display:none;overflow:hidden;}
 #trailer-stage.running{display:block;}
-
-/* Paper phrase — drops from above with bounce */
-.trailer-paper{
-  position:absolute;
-  font-family:'IM Fell English',serif;
-  font-style:italic;
-  color:rgba(107,0,0,.0);
-  line-height:1.6;
-  text-align:center;
-  width:clamp(220px,60vw,360px);
-  left:50%;
-  font-size:clamp(1.1rem,3.5vw,1.5rem);
-  pointer-events:none;
-  transform:translateX(-50%) translateY(-120px) rotate(var(--rot));
-  opacity:0;
-  transition:none;
-}
-.trailer-paper.dropping{
-  transition:transform .55s cubic-bezier(.22,1.8,.36,1), opacity .3s ease, color .6s ease;
-  transform:translateX(-50%) translateY(0) rotate(var(--rot));
-  opacity:1;
-  color:rgba(107,0,0,.88);
-}
-.trailer-paper.scratching{
-  text-decoration:line-through;
-  text-decoration-color:rgba(107,0,0,.80);
-  text-decoration-thickness:3px;
-  transition:opacity .35s ease;
-  opacity:0;
-}
-
-/* Final */
-#trailer-final{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(240,232,210,.0);transition:background .8s ease;}
+.trailer-paper{position:absolute;font-family:'Caveat',cursive;font-weight:600;color:rgba(139,0,0,.0);line-height:1.6;text-align:center;width:clamp(240px,68vw,420px);left:50%;font-size:clamp(1.3rem,4.5vw,1.85rem);pointer-events:none;transform:translateX(-50%) translateY(-150px) rotate(var(--rot));opacity:0;transition:none;}
+.trailer-paper.dropping{transition:transform .65s cubic-bezier(.22,1.85,.36,1),opacity .3s ease,color .5s ease;transform:translateX(-50%) translateY(0) rotate(var(--rot));opacity:1;color:rgb(139,0,0);}
+.trailer-paper.scratching{text-decoration:line-through;text-decoration-color:rgba(139,0,0,.85);text-decoration-thickness:3px;transition:opacity .35s ease;opacity:0;}
+#trailer-final{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(240,232,210,.0);transition:background .8s ease;}
 #trailer-final.show{display:flex;}
 #trailer-final.fadein{background:rgba(240,232,210,.97);}
-#trailer-prox{font-family:'Special Elite',monospace,cursive;font-size:clamp(.8rem,2.5vw,.95rem);
-  color:rgba(107,0,0,.70);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.3rem;min-height:1.4em;}
-#trailer-year{font-family:'Caveat',cursive;font-size:clamp(.85rem,2.5vw,1rem);
-  color:rgba(107,0,0,.55);margin-bottom:2rem;display:inline-block;position:relative;min-height:1.4em;}
+#trailer-prox{font-family:'Special Elite',monospace,cursive;font-size:clamp(.8rem,2.5vw,.95rem);color:rgba(107,0,0,.70);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.3rem;min-height:1.4em;}
+#trailer-year{font-family:'Caveat',cursive;font-size:clamp(.85rem,2.5vw,1rem);color:rgba(107,0,0,.55);margin-bottom:2rem;display:inline-block;position:relative;min-height:1.4em;}
 #trailer-year.struck{text-decoration:line-through;text-decoration-color:rgba(107,0,0,.80);text-decoration-thickness:2px;}
-
-/* Folded paper for title */
-#trailer-paper-wrap{
-  width:clamp(200px,65vw,320px);
-  opacity:0;
-  position:relative;
-  background:#f0e8d0;
-  padding:1.8rem 2rem;
-  text-align:center;
-  box-shadow:3px 5px 20px rgba(0,0,0,.22);
-  /* Folded corner effect */
-  clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
-  transform:rotate(-6deg) scale(0.6) translateY(40px);
-  transition:transform .8s cubic-bezier(.34,1.4,.64,1), opacity .5s ease;
-}
-#trailer-paper-wrap::before{
-  content:'';position:absolute;top:0;right:0;
-  width:22px;height:22px;
-  background:linear-gradient(225deg,#d4c8a8 50%,transparent 50%);
-}
-/* Red ink splashes */
-#trailer-paper-wrap::after{
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 15% 20%,rgba(140,0,0,.18) 0%,transparent 25%),
-    radial-gradient(circle at 85% 75%,rgba(140,0,0,.14) 0%,transparent 20%),
-    radial-gradient(circle at 70% 15%,rgba(140,0,0,.10) 0%,transparent 15%);
-  pointer-events:none;
-}
-#trailer-paper-wrap.unfolded{
-  transform:rotate(-2deg) scale(1) translateY(0);
-  opacity:1;
-}
-#trailer-quien{
-  font-family:'Caveat',cursive;
-  font-size:clamp(1.6rem,6vw,2.5rem);
-  color:rgba(120,0,0,.90);
-  font-weight:700;
-  letter-spacing:.04em;
-  position:relative;
-  z-index:1;
-  min-height:1.4em;
-}
+#trailer-paper-wrap{width:clamp(200px,65vw,320px);opacity:0;position:relative;background:#f0e8d0;padding:1.8rem 2rem 2rem;text-align:center;box-shadow:3px 5px 22px rgba(0,0,0,.28);clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,0 100%);transform:rotate(-5deg) scale(0.55) translateY(50px);transition:transform .9s cubic-bezier(.34,1.4,.64,1),opacity .5s ease;}
+#trailer-paper-wrap::before{content:'';position:absolute;top:0;right:0;width:26px;height:26px;background:linear-gradient(225deg,#c8ba90 50%,transparent 50%);}
+#trailer-paper-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 12% 18%,rgba(140,0,0,.20) 0%,transparent 22%),radial-gradient(circle at 82% 72%,rgba(140,0,0,.16) 0%,transparent 18%),radial-gradient(circle at 65% 12%,rgba(140,0,0,.12) 0%,transparent 14%);pointer-events:none;}
+#trailer-paper-wrap.unfolded{transform:rotate(-1.5deg) scale(1) translateY(0);opacity:1;}
+#trailer-quien{font-family:'Caveat',cursive;font-size:clamp(1.6rem,6vw,2.5rem);color:rgb(139,0,0) !important;font-weight:700;letter-spacing:.04em;position:relative;z-index:1;min-height:1.4em;}
 .ink-dot{position:absolute;border-radius:50%;background:rgba(140,20,20,.22);}
 
-/* Paper phrase */
-.trailer-paper{position:absolute;font-family:'IM Fell English',serif;font-style:italic;
-  color:rgba(107,0,0,.0);line-height:1.55;text-align:center;max-width:280px;
-  font-size:1.2rem;transition:color .7s ease;pointer-events:none;}
-.trailer-paper.visible{color:rgba(107,0,0,.88);}
-/* Scratch: fast strikethrough */
-.trailer-paper.scratching{
-  text-decoration:line-through;
-  text-decoration-color:rgba(107,0,0,.70);
-  text-decoration-thickness:2px;
-  opacity:0;
-  transition:opacity .4s ease;
-}
-/* Final screen */
-#trailer-final{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(240,232,210,.0);transition:background .8s ease;}
-#trailer-final.show{display:flex;}
-#trailer-final.fadein{background:rgba(240,232,210,.97);}
-#trailer-prox{font-family:'Special Elite',monospace,cursive;font-size:clamp(.8rem,2.5vw,.95rem);
-  color:rgba(107,0,0,.65);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.4rem;}
-#trailer-year{font-family:'Caveat',cursive;font-size:clamp(.8rem,2.5vw,.95rem);
-  color:rgba(107,0,0,.55);margin-bottom:1.8rem;display:inline-block;position:relative;}
-#trailer-year.struck::after{content:'';position:absolute;left:0;top:50%;width:100%;height:2px;
-  background:rgba(107,0,0,.70);transform:scaleX(1);transform-origin:left;}
-/* Paper that unfolds */
-#trailer-paper-wrap{
-  width:clamp(220px,70vw,340px);
-  transform:scale(0.3) rotate(-8deg);
-  opacity:0;
-  transition:transform .7s cubic-bezier(.34,1.56,.64,1), opacity .5s ease;
-  background:#f6f0e2;
-  border-radius:3px;
-  padding:1.5rem 1.8rem 1.8rem;
-  box-shadow:2px 4px 18px rgba(0,0,0,.18), inset 0 0 0 1px rgba(107,0,0,.08);
-  position:relative;
-  text-align:center;
-}
-#trailer-paper-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,rgba(180,30,30,.0) 0%,rgba(180,30,30,.35) 30%,rgba(180,30,30,.12) 60%,rgba(180,30,30,.40) 85%,rgba(180,30,30,.0) 100%);}
-#trailer-paper-wrap::after{content:'';position:absolute;bottom:12px;right:14px;
-  width:38px;height:38px;border-radius:50%;
-  background:radial-gradient(circle,rgba(180,30,30,.22) 0%,rgba(180,30,30,.08) 60%,transparent 100%);}
-#trailer-paper-wrap.unfolded{transform:scale(1) rotate(-1deg);opacity:1;}
-#trailer-quien{font-family:'Caveat',cursive;font-size:clamp(1.5rem,6vw,2.4rem);
-  color:rgba(30,60,120,.85);font-weight:700;letter-spacing:.03em;
-  text-shadow:0 1px 0 rgba(30,60,120,.15);}
-/* Ink splatter dots on paper */
-.ink-dot{position:absolute;border-radius:50%;background:rgba(140,20,20,.25);}
-
-/* Easter egg */
-#easter-overlay{display:none;position:fixed;inset:0;z-index:5000;overflow-y:auto;padding:48px 28px 80px;box-sizing:border-box;
-  background:repeating-linear-gradient(transparent,transparent 27px,rgba(148,174,210,.18) 27px,rgba(148,174,210,.18) 28px),
-  radial-gradient(ellipse at 20% 10%,rgba(230,210,160,.32) 0%,transparent 38%),#f0ead8;}
+/* ── Easter egg ── */
+#easter-overlay{display:none;position:fixed;inset:0;z-index:5000;overflow-y:auto;padding:48px 28px 80px;box-sizing:border-box;background:repeating-linear-gradient(transparent,transparent 27px,rgba(148,174,210,.18) 27px,rgba(148,174,210,.18) 28px),radial-gradient(ellipse at 20% 10%,rgba(230,210,160,.32) 0%,transparent 38%),#f0ead8;}
 #easter-overlay.open{display:block;}
 #easter-close{position:fixed;top:16px;right:20px;background:none;border:none;color:rgba(107,0,0,.45);font-size:.85rem;cursor:pointer;z-index:5001;padding:6px 10px;font-family:'Caveat',cursive;}
 #easter-text{max-width:420px;margin:0 auto;padding-top:20px;}
@@ -2679,9 +2555,6 @@ document.querySelectorAll('a,button,input,.open-hint,.book-closed,.zone').forEac
 <audio id="audio-midnight" preload="none" loop
   src="https://archive.org/download/m-83-midnight-city-lyrics/M83%20-%20Midnight%20City%20(Lyrics).mp3">
 </audio>
-<audio id="audio-ticket" preload="none" src="https://ia902900.us.archive.org/5/items/eruption-one-way-ticket-sub-espanol-ingles-video-hd/Eruption%20-%20One%20Way%20Ticket%20%20Sub%20Espa%C3%B1ol%20%26%20Ingl%C3%A9s%20%20Video%20HD.mp3"></audio>
-<audio id="audio-angel" preload="auto" src="https://ia601507.us.archive.org/19/items/real-life-send-me-an-angel-extended-dance-mix/Real%20Life%20-%20Send%20Me%20An%20Angel%20%28Extended%20Dance%20Mix%29.mp3" loop></audio>
-<audio id="audio-ojos" preload="auto" src="https://ia601507.us.archive.org/22/items/elsa-y-elmar-ojos-noche-audio/Elsa%20y%20Elmar%20-%20Ojos%20Noche%20%5BAudio%5D.mp3" loop></audio>
 
 <div id="music-widget">
   <div id="music-track-label">♪ </div>
@@ -3004,18 +2877,6 @@ function _setAndPlay(audioEl, url, seekSecs) {
   });
 }
 
-function startOneWayTicket() {
-  var audio = document.getElementById('audio-ticket');
-  if (!audio) return;
-  var trigger = document.querySelector('[onclick="startOneWayTicket()"]');
-  if (trigger) trigger.classList.add('played');
-  mLabel.textContent = '\u266a One Way Ticket \u2014 Eruption';
-  mWidget.classList.add('mw-show','mw-playing');
-  currentMusicPage = 23;
-  audio.currentTime = 0; audio.volume = 0;
-  audio.play().then(function(){ fadeAudio(audio,0,0.65,2000); }).catch(function(){});
-}
-
 function stopAllMusic() {
   stopMidnightCity();
   stopZombie();
@@ -3047,356 +2908,34 @@ function stopAllMusic() {
 </div>
 
 <script>
-/* ══════════════════════════════
-   REACCIONES ANÓNIMAS
-══════════════════════════════ */
+/* REACCIONES + SUPABASE */
 (function() {
-  const SPIRITS = [
-    'Alma anónima','Sombra anónima','Espíritu libre y anónimo',
-    'Zombi anónimo','Pensador anónimo','Espectro anónimo',
-    'Gatito anónimo','Pez payaso anónimo','Detector de humo anónimo'
-  ];
-
-  // Name: persistent per device, but user can change it
-  let myName = localStorage.getItem('reaction_name');
-  if (!myName) {
-    myName = SPIRITS[Math.floor(Math.random() * SPIRITS.length)];
-    localStorage.setItem('reaction_name', myName);
-  }
-  
-  // Render name as clickable selector
-  const nameEl = document.getElementById('reaction-anon-name');
-  function renderName() {
-    nameEl.innerHTML = '<span style="cursor:pointer;border-bottom:1px dashed rgba(107,0,0,.4)" title="Cambiar nombre">' + myName + ' ✎</span>';
-    nameEl.querySelector('span').onclick = () => {
-      // Show a mini selector
-      const sel = document.createElement('select');
-      sel.style.cssText = 'font-family:Caveat,cursive;font-size:.9em;color:#3d0000;background:#f6f0e2;border:1px solid rgba(107,0,0,.3);border-radius:6px;padding:2px 4px;';
-      SPIRITS.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s; opt.textContent = s;
-        if (s === myName) opt.selected = true;
-        sel.appendChild(opt);
-      });
-      sel.onchange = () => {
-        myName = sel.value;
-        localStorage.setItem('reaction_name', myName);
-        nameEl.innerHTML = '';
-        nameEl.appendChild(sel);
-        renderName();
-      };
-      nameEl.innerHTML = '';
-      nameEl.appendChild(sel);
-    };
-  }
-  renderName();
-
-  let activeParagraphId = null;
-
-  // ── Attach reaction buttons to all story paragraphs ──
-  function attachReactions() {
-    const storyEl = document.querySelector('#pageR .story-atmos-layer');
-    const storyId = storyEl ? storyEl.id.replace('sa_','') : 'pg';
-    document.querySelectorAll('#pageR .p-story .pb, #pageR .p-story .pd').forEach((p, i) => {
-      if (p.dataset.reactionId) return; // already attached
-      // Stable ID: storyId + paragraph index (not timestamp)
-      const id = 'rp_' + storyId + '_' + i;
-      p.dataset.reactionId = id;
-
-      // Wrap in relative container
-      const wrap = document.createElement('span');
-      wrap.className = 'para-reaction-wrap';
-      wrap.style.display = 'block';
-      p.parentNode.insertBefore(wrap, p);
-      wrap.appendChild(p);
-
-      // Add button
-      const btn = document.createElement('button');
-      btn.className = 'reaction-btn';
-      btn.innerHTML = '💬';
-      btn.title = 'Reaccionar';
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openModal(id, wrap);
-      });
-      wrap.appendChild(btn);
-
-      // Add bubbles container
-      const bubbles = document.createElement('div');
-      bubbles.className = 'reaction-bubbles';
-      bubbles.id = 'bubbles_' + id;
-      wrap.appendChild(bubbles);
-
-      // Load existing comments
-      loadComments(id);
-    });
-  }
-
-  // ── Open modal ──
-  function openModal(paraId, wrap) {
-    activeParagraphId = paraId;
-    const overlay = document.getElementById('reaction-modal-overlay');
-    const ta = document.getElementById('reaction-textarea');
-    ta.value = '';
-    overlay.classList.add('open');
-    setTimeout(() => ta.focus(), 300);
-
-    // Toggle comments visibility
-    if (wrap) {
-      wrap.classList.toggle('comments-open');
-    }
-  }
-
-  // ── Submit ──
-  document.getElementById('reaction-submit').addEventListener('click', () => {
-    const ta = document.getElementById('reaction-textarea');
-    const text = ta.value.trim();
-    if (!text || !activeParagraphId) return;
-
-    saveComment(activeParagraphId, text, myName);
-    loadComments(activeParagraphId);
-    // Show the bubbles right away
-    const savedWrap = document.querySelector('[data-reaction-id="' + activeParagraphId + '"]');
-    if (savedWrap) savedWrap.classList.add('has-comments', 'comments-open');
-    closeModal();
-  });
-
-  document.getElementById('reaction-cancel').addEventListener('click', closeModal);
-  document.getElementById('reaction-modal-overlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal();
-  });
-
-  function closeModal() {
-    document.getElementById('reaction-modal-overlay').classList.remove('open');
-    document.getElementById('reaction-textarea').value = '';
-    activeParagraphId = null;
-  }
-
-  // ── Storage (localStorage) ──
-  function saveComment(paraId, text, author) {
-    const key = 'reactions_' + paraId;
-    const existing = JSON.parse(localStorage.getItem(key) || '[]');
-    existing.push({ text, author, ts: Date.now() });
-    localStorage.setItem(key, JSON.stringify(existing));
-  }
-
-  function loadComments(paraId) {
-    const key = 'reactions_' + paraId;
-    const comments = JSON.parse(localStorage.getItem(key) || '[]');
-    const container = document.getElementById('bubbles_' + paraId);
-    const wrap = container && container.parentNode;
-    if (!container) return;
-
-    container.innerHTML = '';
-    comments.forEach(c => {
-      const bubble = document.createElement('div');
-      bubble.className = 'reaction-bubble';
-      bubble.innerHTML = '<div class="reaction-bubble-author">' + c.author + '</div>' + escHtml(c.text);
-      container.appendChild(bubble);
-    });
-
-    if (comments.length > 0 && wrap) {
-      wrap.classList.add('has-comments');
-    }
-  }
-
-  function escHtml(t) {
-    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  // ── Re-attach on every renderPages ──
-  const _origRender = window.renderPages;
-  window.renderPages = function(idx) {
-    _origRender(idx);
-    setTimeout(attachReactions, 150);
-    setTimeout(_addTapeStrips, 100);
-  };
-
-  function _addTapeStrips() {
-    document.querySelectorAll('.p-doodle-real').forEach(function(el) {
-      if (el.querySelector('.doodle-tape')) return;
-      [
-        {t:'40%', l:'10px', w:'38px', h:'12px', r:'-88deg'},
-        {t:'20px', l:'auto', ri:'24px', w:'44px', h:'13px', r:'1.5deg'},
-        {t:'auto', b:'35%', l:'14px', w:'36px', h:'11px', r:'92deg'},
-      ].forEach(function(cfg) {
-        var d = document.createElement('div');
-        d.className = 'doodle-tape';
-        d.style.position = 'absolute';
-        d.style.width = cfg.w; d.style.height = cfg.h;
-        d.style.transform = 'rotate('+cfg.r+')';
-        if (cfg.t && cfg.t !== 'auto') d.style.top = cfg.t; else d.style.top = 'auto';
-        if (cfg.b) d.style.bottom = cfg.b;
-        if (cfg.l && cfg.l !== 'auto') d.style.left = cfg.l; else d.style.left = 'auto';
-        if (cfg.ri) d.style.right = cfg.ri;
-        el.appendChild(d);
-      });
-    });
-  }
-
-  // Also attach on first load
-  document.addEventListener('DOMContentLoaded', () => setTimeout(attachReactions, 500));
-})();
+  var SB_URL='https://seabwqcxoepciomirkuo.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlYWJ3cWN4b2VwY2lvbWlya3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzIzNDIsImV4cCI6MjA4OTYwODM0Mn0.nyzuI9Xl2iCuXq9aDn42Xj9C9BML0o7NQNUhZuM_EHc';
+  var SPIRITS=['Alma anónima','Sombra anónima','Espíritu libre y anónimo','Zombi anónimo','Pensador anónimo','Espectro anónimo','Gatito anónimo','Pez payaso anónimo','Detector de humo anónimo'];
+  var myName=localStorage.getItem('reaction_name');
+  if(!myName||SPIRITS.indexOf(myName)<0){{myName=SPIRITS[Math.floor(Math.random()*SPIRITS.length)];localStorage.setItem('reaction_name',myName);}}
+  var activeParagraphId=null;
+  function sbH(){{return{{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}};}}
+  function saveSB(texto,autor,parrafo_id){{fetch(SB_URL+'/rest/v1/comentarios',{{method:'POST',headers:Object.assign(sbH(),{{'Prefer':'return=minimal'}}),body:JSON.stringify({{texto:texto,autor:autor,parrafo_id:parrafo_id,libro:'el_arte'}})}}).catch(function(){{}});}}
+  function loadSB(parrafo_id,cb){{fetch(SB_URL+'/rest/v1/comentarios?parrafo_id=eq.'+encodeURIComponent(parrafo_id)+'&order=created_at.asc',{{headers:sbH()}}).then(function(r){{return r.json();}}).then(cb).catch(function(){{cb([]);}});}}
+  function renderChips(){{var chips=document.getElementById('reaction-name-chips');if(!chips)return;chips.innerHTML='';SPIRITS.forEach(function(name){{var c=document.createElement('button');c.className='name-chip'+(name===myName?' selected':'');c.textContent=name;c.onclick=function(){{myName=name;localStorage.setItem('reaction_name',myName);renderChips();}};chips.appendChild(c);}});}}
+  function renderExisting(paraId){{var el=document.getElementById('reaction-existing');if(!el)return;el.innerHTML='<p class="reaction-empty-msg">Cargando...</p>';loadSB(paraId,function(c){{el.innerHTML='';if(!c||!c.length){{el.innerHTML='<p class="reaction-empty-msg">Sé el primero en reaccionar aquí.</p>';return;}}c.forEach(function(x){{var b=document.createElement('div');b.className='reaction-existing-bubble';b.innerHTML='<div class="reaction-existing-author">'+esc(x.autor)+'</div>'+esc(x.texto);el.appendChild(b);}});}});}}
+  function openModal(paraId){{activeParagraphId=paraId;var o=document.getElementById('reaction-modal-overlay');document.getElementById('reaction-textarea').value='';renderChips();renderExisting(paraId);o.style.display='flex';o.classList.add('open');setTimeout(function(){{document.getElementById('reaction-textarea').focus();}},300);}}
+  function closeModal(){{var o=document.getElementById('reaction-modal-overlay');o.style.display='none';o.classList.remove('open');activeParagraphId=null;}}
+  document.getElementById('reaction-cancel').addEventListener('click',closeModal);
+  document.getElementById('reaction-modal-overlay').addEventListener('click',function(e){{if(e.target===e.currentTarget)closeModal();}});
+  document.getElementById('reaction-submit').addEventListener('click',function(){{var ta=document.getElementById('reaction-textarea');var text=ta.value.trim();if(!text||!activeParagraphId)return;saveSB(text,myName,activeParagraphId);var key='reactions_'+activeParagraphId;var ex=JSON.parse(localStorage.getItem(key)||'[]');ex.push({{texto:text,autor:myName}});localStorage.setItem(key,JSON.stringify(ex));ta.value='';loadComments(activeParagraphId);renderExisting(activeParagraphId);}});
+  function loadComments(paraId){{var cont=document.getElementById('bubbles_'+paraId);if(!cont)return;var local=JSON.parse(localStorage.getItem('reactions_'+paraId)||'[]');cont.innerHTML='';local.forEach(function(c){{var b=document.createElement('div');b.className='reaction-bubble';b.innerHTML='<div class="reaction-bubble-author">'+esc(c.autor||c.author)+'</div>'+esc(c.texto||c.text);cont.appendChild(b);}});var wrap=cont.parentNode;if(local.length>0&&wrap){{wrap.classList.add('has-comments');var btn=wrap.querySelector('.reaction-btn');if(btn){{btn.innerHTML='&#128172;'+local.length;btn.style.opacity='1';}}}}loadSB(paraId,function(remote){{if(!remote||!remote.length)return;localStorage.setItem('reactions_'+paraId,JSON.stringify(remote.map(function(c){{return{{texto:c.texto,autor:c.autor}};}})));cont.innerHTML='';remote.forEach(function(c){{var b=document.createElement('div');b.className='reaction-bubble';b.innerHTML='<div class="reaction-bubble-author">'+esc(c.autor)+'</div>'+esc(c.texto);cont.appendChild(b);}});if(wrap){{wrap.classList.add('has-comments');var btn=wrap.querySelector('.reaction-btn');if(btn){{btn.innerHTML='&#128172;'+remote.length;btn.style.opacity='1';}}}}}});}}
+  function esc(t){{return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}}
+  function attachReactions(){{var storyEl=document.querySelector('#pageR .story-atmos-layer');var storyId=storyEl?storyEl.id.replace('sa_',''):'pg';document.querySelectorAll('#pageR .p-story .pb,#pageR .p-story .pd').forEach(function(p,i){{if(p.dataset.reactionId)return;var id='rp_'+storyId+'_'+i;p.dataset.reactionId=id;var wrap=document.createElement('span');wrap.className='para-reaction-wrap';wrap.style.display='block';p.parentNode.insertBefore(wrap,p);wrap.appendChild(p);var btn=document.createElement('button');btn.className='reaction-btn';btn.textContent=String.fromCodePoint(128172);btn.title='Reaccionar';btn.addEventListener('click',function(e){{e.stopPropagation();openModal(id);}});wrap.appendChild(btn);var bubbles=document.createElement('div');bubbles.className='reaction-bubbles';bubbles.id='bubbles_'+id;wrap.appendChild(bubbles);loadComments(id);}});}}
+  var _o=window.renderPages;window.renderPages=function(idx){{_o(idx);setTimeout(attachReactions,200);}};
+  document.addEventListener('DOMContentLoaded',function(){{document.getElementById('reaction-modal-overlay').style.display='none';setTimeout(attachReactions,500);}});
+}})();
 </script>
 
-<div id="trailer-overlay">
-  <button id="trailer-close">&#x2715; cerrar</button>
-  <div id="trailer-intro-wrap">
-    <div id="trailer-intro-text">
-      Hola, gracias por curiosear.<br>
-      Estoy escribiendo una novela. De verdad. (Ha-ha)<br><br>
-    </div>
-    <span id="trailer-tap">
-      <span class="trailer-tap-hint">toca aquí</span>
-      Toca aquí para ver el trailer.
-    </span>
-  </div>
-  <div id="trailer-stage"></div>
-  <div id="trailer-final">
-    <p id="trailer-prox"></p>
-    <p id="trailer-year"></p>
-    <div id="trailer-paper-wrap">
-      <span class="ink-dot" style="width:8px;height:8px;top:18px;left:22px;"></span>
-      <span class="ink-dot" style="width:5px;height:5px;top:28px;right:30px;"></span>
-      <span class="ink-dot" style="width:11px;height:11px;bottom:20px;left:35px;opacity:.18"></span>
-      <p id="trailer-quien"></p>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  var FRASES = ["Hola, yo soy Martha la Loca o La loca Martha \u00bfc\u00f3mo suena mejor?", "Ni siquiera pude despedirme.", "Vive\u2026 por favor, vive y d\u00e9jame descansar, mi amor.", "En ese momento, la cordura era un lujo que ya no me pod\u00eda permitir.", "La verdad, no puedo decir que has perdido la cabeza\u2026 eso me har\u00eda desaparecer.", "Antiguas culturas cre\u00edan que los espejos abr\u00edan portales.", "\u00bfPero si crees que un espejo puede cambiarlo todo\u2026 \u00bfpor qu\u00e9 no?", "Yo no mat\u00e9 a nadie.", "\u00bfQu\u00e9 te parece Martha Muchos Mundos? Me gusta. Es mejor que Martha la Loca.", "Soy Ren. Ren de Nana\u2026 o Ren de Martha.", "M\u00edrenme.", "\u00bfLa locura es contagiosa o me enamor\u00e9 a primera vista?", "\u00bfLe han dicho que suena como robot?", "Ten\u00eda que salir de ah\u00ed. Esta mierda no pod\u00eda ser real.", "\u00bfNo me creen? Traigan mi espejo."];
-  var _tIdx=-1, _tTimeout=null, _tPaper=null, _tRunning=false;
-
-  window.openTrailer = function(){
-    var o=document.getElementById('trailer-overlay');
-    if(!o)return;
-    o.classList.add('open');
-    _tIdx=-1; _tRunning=false; _tPaper=null;
-    document.getElementById('trailer-intro-wrap').style.display='block';
-    var stage=document.getElementById('trailer-stage');
-    stage.innerHTML=''; stage.classList.remove('running');
-    var fin=document.getElementById('trailer-final');
-    fin.classList.remove('show','fadein');
-    document.getElementById('trailer-prox').textContent='';
-    document.getElementById('trailer-year').textContent='';
-    document.getElementById('trailer-year').classList.remove('struck');
-    document.getElementById('trailer-quien').textContent='';
-    document.getElementById('trailer-paper-wrap').classList.remove('unfolded');
-    var angel=document.getElementById('audio-angel');
-    if(angel){angel.currentTime=0;angel.volume=0;angel.play().then(function(){fadeAudio(angel,0,0.40,3000);}).catch(function(){});}
-  };
-
-  function startSeq(){
-    if(_tRunning)return; _tRunning=true;
-    document.getElementById('trailer-intro-wrap').style.display='none';
-    document.getElementById('trailer-stage').classList.add('running');
-    nextPaper();
-  }
-
-  function nextPaper(){
-    _tIdx++;
-    if(_tIdx>=FRASES.length){endTrailer();return;}
-    var frase=FRASES[_tIdx];
-    var stage=document.getElementById('trailer-stage');
-
-    // Remove old with scratch
-    if(_tPaper){
-      var old=_tPaper;
-      old.classList.remove('dropping');
-      old.classList.add('scratching');
-      setTimeout(function(){if(old.parentNode)old.parentNode.removeChild(old);},400);
-    }
-
-    // Create new — drop from top with random rotation
-    var paper=document.createElement('div');
-    paper.className='trailer-paper';
-    var rot=(Math.random()*7-3.5).toFixed(1);
-    var topPct=(Math.random()*25+32).toFixed(1); // 32-57% from top
-    paper.style.cssText='--rot:'+rot+'deg;top:'+topPct+'%;';
-    paper.textContent=frase;
-    stage.appendChild(paper);
-    _tPaper=paper;
-    // Trigger drop on next frame
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        paper.classList.add('dropping');
-      });
-    });
-
-    // Variable duration — shorter for punchy lines, longer for long ones
-    var base = frase.length > 60 ? 4800 : frase.length > 35 ? 3800 : 2800;
-    var jitter = Math.random()*600 - 300;
-    _tTimeout=setTimeout(nextPaper, base + jitter);
-  }
-
-  function endTrailer(){
-    if(_tPaper){
-      _tPaper.classList.add('scratching');
-      setTimeout(function(){if(_tPaper&&_tPaper.parentNode)_tPaper.parentNode.removeChild(_tPaper);},400);
-    }
-    var angel=document.getElementById('audio-angel');
-    if(angel)fadeAudio(angel,angel.volume,0.90,2000);
-
-    setTimeout(function(){
-      var fin=document.getElementById('trailer-final');
-      fin.classList.add('show');
-      setTimeout(function(){fin.classList.add('fadein');},100);
-      // Typewriter PRÓXIMAMENTE
-      setTimeout(function(){
-        typeEl('trailer-prox','PRÓXIMAMENTE',55,function(){
-          // "(no sé en qué año)" appears then struck immediately
-          setTimeout(function(){
-            var yr=document.getElementById('trailer-year');
-            yr.textContent='(no sé en qué año)';
-            setTimeout(function(){yr.classList.add('struck');},300);
-            // Paper unfolds
-            setTimeout(function(){
-              document.getElementById('trailer-paper-wrap').classList.add('unfolded');
-              setTimeout(function(){
-                typeEl('trailer-quien','¿QUIÉN ES REN?',95,null);
-              },700);
-            },900);
-          },400);
-        });
-      },500);
-    },1000);
-  }
-
-  function typeEl(id,text,speed,cb){
-    var el=document.getElementById(id);
-    el.textContent='';
-    var i=0;
-    function next(){
-      if(i>=text.length){if(cb)setTimeout(cb,200);return;}
-      el.textContent+=text[i++];
-      var delay=speed+(Math.random()*50-25);
-      // Occasional longer pause for drama
-      if(Math.random()<0.08)delay+=180;
-      setTimeout(next,delay);
-    }
-    next();
-  }
-
-  function closeTrailer(){
-    var o=document.getElementById('trailer-overlay');
-    if(o)o.classList.remove('open');
-    var angel=document.getElementById('audio-angel');
-    if(angel&&!angel.paused)fadeAudio(angel,angel.volume,0,1000,function(){angel.pause();angel.currentTime=0;});
-    if(_tTimeout){clearTimeout(_tTimeout);_tTimeout=null;}
-    _tRunning=false; _tPaper=null;
-  }
-
-  document.addEventListener('DOMContentLoaded',function(){
-    var cb=document.getElementById('trailer-close');
-    if(cb)cb.addEventListener('click',closeTrailer);
-    var tap=document.getElementById('trailer-tap');
-    if(tap)tap.addEventListener('click',startSeq);
-    var ov=document.getElementById('trailer-overlay');
-    if(ov)ov.addEventListener('click',function(e){if(e.target===e.currentTarget)closeTrailer();});
-  });
-})();
-</script>
+<audio id="audio-ticket" preload="none" src="https://ia902900.us.archive.org/5/items/eruption-one-way-ticket-sub-espanol-ingles-video-hd/Eruption%20-%20One%20Way%20Ticket%20%20Sub%20Espa%C3%B1ol%20%26%20Ingl%C3%A9s%20%20Video%20HD.mp3"></audio>
+<audio id="audio-angel" preload="auto" src="https://ia601507.us.archive.org/19/items/real-life-send-me-an-angel-extended-dance-mix/Real%20Life%20-%20Send%20Me%20An%20Angel%20%28Extended%20Dance%20Mix%29.mp3" loop></audio>
 
 <div id="easter-overlay" style="display:none">
   <button id="easter-close">&#x2715; cerrar</button>
@@ -3456,26 +2995,116 @@ function stopAllMusic() {
     <p>Emociones nuevas.</p>
     <p>Reinventarte.</p>
     <p>Transformarte.</p>
+    <p style="font-family:'Caveat',cursive;font-size:.88em;color:rgba(107,0,0,.50);font-style:italic">♦ escucha Saoko de la Rosalía</p>
     <p>Perdón.</p>
     <p>Eso te pasa por tocar.</p>
     <p>Así funciona la curiosidad:</p>
     <p>te puede llevar justo a lo que no estabas buscando.</p>
   </div>
 </div>
+
+<div id="trailer-overlay">
+  <button id="trailer-close">&#x2715; cerrar</button>
+  <div id="trailer-intro-wrap">
+    <div id="trailer-intro-text">Hola, gracias por curiosear.<br>Estoy escribiendo una novela. De verdad. (Ha-ha)<br><br></div>
+    <span id="trailer-tap"><span class="trailer-tap-hint">toca aquí</span>Toca aquí para ver el trailer.</span>
+  </div>
+  <div id="trailer-stage"></div>
+  <div id="trailer-final">
+    <p id="trailer-prox"></p>
+    <p id="trailer-year"></p>
+    <div id="trailer-paper-wrap">
+      <span class="ink-dot" style="width:8px;height:8px;top:16px;left:20px;"></span>
+      <span class="ink-dot" style="width:5px;height:5px;top:26px;right:28px;"></span>
+      <span class="ink-dot" style="width:11px;height:11px;bottom:18px;left:32px;opacity:.18"></span>
+      <p id="trailer-quien"></p>
+    </div>
+  </div>
+</div>
+
 <script>
+// One Way Ticket
+function startOneWayTicket(){
+  var a=document.getElementById('audio-ticket');if(!a)return;
+  var t=document.querySelector('[onclick="startOneWayTicket()"]');if(t)t.classList.add('played');
+  mLabel.textContent='♪ One Way Ticket — Eruption';
+  mWidget.classList.add('mw-show','mw-playing');
+  currentMusicPage=23;
+  a.currentTime=0;a.volume=0;
+  a.play().then(function(){fadeAudio(a,0,0.65,2000);}).catch(function(){});
+}
+// Easter egg
 function openEasterEgg(){
   var o=document.getElementById('easter-overlay');
   if(o){o.style.display='block';o.classList.add('open');}
 }
 document.addEventListener('DOMContentLoaded',function(){
-  var btn=document.getElementById('easter-close');
-  if(btn)btn.addEventListener('click',function(){
+  var eb=document.getElementById('easter-close');
+  if(eb)eb.addEventListener('click',function(){
     var o=document.getElementById('easter-overlay');
     if(o){o.style.display='none';o.classList.remove('open');}
     var a=document.getElementById('audio-ticket');
     if(a&&!a.paused){a.pause();a.currentTime=0;}
   });
 });
+// Trailer
+(function(){
+  var FRASES=["Hola, yo soy Martha la Loca o La loca Martha \u00bfc\u00f3mo suena mejor?", "Ni siquiera pude despedirme.", "Vive\u2026 por favor, vive y d\u00e9jame descansar, mi amor.", "En ese momento, la cordura era un lujo que ya no me pod\u00eda permitir.", "La verdad, no puedo decir que has perdido la cabeza\u2026 eso me har\u00eda desaparecer.", "Antiguas culturas cre\u00edan que los espejos abr\u00edan portales.", "\u00bfPero si crees que un espejo puede cambiarlo todo\u2026 \u00bfpor qu\u00e9 no?", "Yo no mat\u00e9 a nadie.", "\u00bfQu\u00e9 te parece Martha Muchos Mundos? Me gusta. Es mejor que Martha la Loca.", "Soy Ren. Ren de Nana\u2026 o Ren de Martha.", "M\u00edrenme.", "\u00bfLa locura es contagiosa o me enamor\u00e9 a primera vista?", "\u00bfLe han dicho que suena como robot?", "Ten\u00eda que salir de ah\u00ed. Esta mierda no pod\u00eda ser real.", "\u00bfNo me creen? Traigan mi espejo."];
+  var _tIdx=-1,_tTimeout=null,_tPaper=null,_tRunning=false;
+  window.openTrailer=function(){
+    var o=document.getElementById('trailer-overlay');if(!o)return;
+    o.classList.add('open');_tIdx=-1;_tRunning=false;_tPaper=null;
+    document.getElementById('trailer-intro-wrap').style.display='block';
+    var s=document.getElementById('trailer-stage');s.innerHTML='';s.classList.remove('running');
+    var f=document.getElementById('trailer-final');f.classList.remove('show','fadein');
+    document.getElementById('trailer-prox').textContent='';
+    document.getElementById('trailer-year').textContent='';
+    document.getElementById('trailer-year').classList.remove('struck');
+    document.getElementById('trailer-quien').textContent='';
+    document.getElementById('trailer-paper-wrap').classList.remove('unfolded');
+    var angel=document.getElementById('audio-angel');
+    if(angel){angel.currentTime=0;angel.volume=0;angel.play().then(function(){fadeAudio(angel,0,0.40,3000);}).catch(function(){});}
+  };
+  function startSeq(){if(_tRunning)return;_tRunning=true;document.getElementById('trailer-intro-wrap').style.display='none';document.getElementById('trailer-stage').classList.add('running');nextP();}
+  function nextP(){
+    _tIdx++;if(_tIdx>=FRASES.length){endT();return;}
+    var frase=FRASES[_tIdx];
+    var stage=document.getElementById('trailer-stage');
+    if(_tPaper){var old=_tPaper;old.classList.remove('dropping');old.classList.add('scratching');setTimeout(function(){if(old.parentNode)old.parentNode.removeChild(old);},400);}
+    var p=document.createElement('div');p.className='trailer-paper';
+    var rot=(Math.random()*8-4).toFixed(1);var top=(Math.random()*25+32).toFixed(1);
+    p.style.cssText='--rot:'+rot+'deg;top:'+top+'%;';p.textContent=frase;
+    stage.appendChild(p);_tPaper=p;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){p.classList.add('dropping');});});
+    var dur=(frase.length>60?4800:frase.length>35?3800:2800)+(Math.random()*600-300);
+    _tTimeout=setTimeout(nextP,dur);
+  }
+  function endT(){
+    if(_tPaper){_tPaper.classList.add('scratching');setTimeout(function(){if(_tPaper&&_tPaper.parentNode)_tPaper.parentNode.removeChild(_tPaper);},400);}
+    var angel=document.getElementById('audio-angel');if(angel)fadeAudio(angel,angel.volume,0.90,2000);
+    setTimeout(function(){
+      var fin=document.getElementById('trailer-final');fin.classList.add('show');
+      setTimeout(function(){fin.classList.add('fadein');},100);
+      setTimeout(function(){typeEl('trailer-prox','PRÓXIMAMENTE',55,function(){
+        setTimeout(function(){
+          var yr=document.getElementById('trailer-year');yr.textContent='(no sé en qué año)';
+          setTimeout(function(){yr.classList.add('struck');},300);
+          setTimeout(function(){
+            document.getElementById('trailer-paper-wrap').classList.add('unfolded');
+            setTimeout(function(){typeEl('trailer-quien','¿QUIÉN ES REN?',95,null);},700);
+          },900);
+        },400);
+      });},500);
+    },1000);
+  }
+  function typeEl(id,text,speed,cb){var el=document.getElementById(id);el.textContent='';var i=0;function next(){if(i>=text.length){if(cb)setTimeout(cb,200);return;}el.textContent+=text[i++];var d=speed+(Math.random()*50-25);if(Math.random()<0.08)d+=180;setTimeout(next,d);}next();}
+  function closeT(){var o=document.getElementById('trailer-overlay');if(o)o.classList.remove('open');var angel=document.getElementById('audio-angel');if(angel&&!angel.paused)fadeAudio(angel,angel.volume,0,1000,function(){angel.pause();angel.currentTime=0;});if(_tTimeout){clearTimeout(_tTimeout);_tTimeout=null;}_tRunning=false;_tPaper=null;}
+  document.addEventListener('DOMContentLoaded',function(){
+    var cb=document.getElementById('trailer-close');if(cb)cb.addEventListener('click',closeT);
+    var tap=document.getElementById('trailer-tap');if(tap)tap.addEventListener('click',startSeq);
+    var ov=document.getElementById('trailer-overlay');if(ov)ov.addEventListener('click',function(e){if(e.target===e.currentTarget)closeT();});
+  });
+})();
 </script>
 </body>
 </html>

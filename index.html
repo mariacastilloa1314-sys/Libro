@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@400;600&family=Cinzel+Decorative&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Special+Elite&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --ph:  clamp(460px, calc(100vh - 96px), 820px);
+  --ph:  clamp(460px, calc(100vh - 80px), 900px);
   --pw:  calc(var(--ph) / 1.54);
   --sw:  clamp(14px,1.8vw,22px);
   --gold:       #b8956a;
@@ -656,11 +656,11 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 .story-scroll .pb,
 .story-scroll .pd {
   font-family: 'Crimson Pro', serif;
-  font-size: clamp(.78rem,1.5vw,1.05rem);
-  line-height: 1.84;
+  font-size: clamp(.92rem,1.6vw,1.15rem);
+  line-height: 1.90;
   color: rgba(195,168,118,.88);
-  margin-bottom: .58em;
-  text-align: justify;
+  margin-bottom: .60em;
+  text-align: left;
   transition: color 2.2s cubic-bezier(.4,0,.2,1),
               text-shadow 2.2s ease;
 }
@@ -823,11 +823,11 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 /* Paragraphs — blue ink on paper */
 .story-scroll .pb, .story-scroll .pd {
   font-family: 'Crimson Pro', serif;
-  font-size: clamp(.78rem,1.5vw,1.05rem);
-  line-height: 1.82;
+  font-size: clamp(.92rem,1.6vw,1.15rem);
+  line-height: 1.90;
   color: rgba(195,168,118,.88);
-  margin-bottom: .55em;
-  text-align: justify;
+  margin-bottom: .60em;
+  text-align: left;
   transition: color 1.2s ease;
 }
 .story-scroll .pd {
@@ -1311,11 +1311,21 @@ html, body {
   background: #f7f2e8 !important;
   border-radius: 4px 0 0 4px !important;
   overflow: hidden !important;
+  position: relative !important;
+}
+.pg-l .p-story {
+  overflow-y: auto !important;
+  height: 100% !important;
 }
 .pg-r {
   background: #f7f2e8 !important;
   border-radius: 0 4px 4px 4px !important;
   overflow: hidden !important;
+  position: relative !important;
+}
+.pg-r .p-story {
+  overflow-y: auto !important;
+  height: 100% !important;
 }
 /* p-story must be above zones so scroll works */
 .p-story {
@@ -3034,6 +3044,7 @@ function startOneWayTicket(){
   });
 }
 function openEasterEgg(){
+  stopAllMusic();
   var o=document.getElementById('easter-overlay');
   if(o){o.style.display='block';o.classList.add('open');}
   var lines=document.querySelectorAll('#easter-text p,#easter-text .easter-tap-wrap');
@@ -3053,6 +3064,7 @@ function openEasterEgg(){
   var SPIRITS=['Alma an\u00f3nima','Sombra an\u00f3nima','Esp\u00edritu libre y an\u00f3nimo','Zombi an\u00f3nimo','Pensador an\u00f3nimo','Espectro an\u00f3nimo','Gatito an\u00f3nimo','Pez payaso an\u00f3nimo','Detector de humo an\u00f3nimo'];
 
   window.openTrailer=function(){
+    stopAllMusic();
     var o=document.getElementById('trailer-overlay');if(!o)return;
     o.classList.add('open');_tIdx=-1;_tRunning=false;_tPaper=null;
     document.getElementById('trailer-intro-wrap').style.display='block';

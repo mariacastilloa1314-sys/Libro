@@ -1612,6 +1612,7 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
   .reader-header {
     height: 46px;
     padding: 0 8px;
+    background: #1a0505 !important;
   }
   .rh-title  { font-size: .65rem; letter-spacing: .04em; }
   .rh-author { display: none; }
@@ -2107,6 +2108,59 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
     max-height: calc(100vh - 120px) !important;
   }
 }
+
+/* ── Easter egg finale ── */
+#easter-finale {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 5500;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: background 2s ease;
+}
+#easter-finale.show { display: flex; }
+#easter-finale.dark { background: rgba(0,0,0,1); }
+.butterfly {
+  font-size: 4rem;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 1s ease, transform 1s ease;
+  animation: none;
+  user-select: none;
+}
+.butterfly.visible {
+  opacity: 1;
+  transform: scale(1);
+  animation: flutter 1.2s ease-in-out infinite alternate;
+}
+@keyframes flutter {
+  from { transform: scale(1) rotate(-5deg); }
+  to   { transform: scale(1.1) rotate(5deg); }
+}
+#easter-transform-text {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: rgba(255,255,255,0);
+  letter-spacing: .1em;
+  margin-top: 1.5rem;
+  transition: color 1.5s ease;
+}
+#easter-transform-text.visible { color: rgba(255,255,255,.90); }
+.star-particle {
+  position: fixed;
+  pointer-events: none;
+  font-size: clamp(.8rem, 2vw, 1.2rem);
+  opacity: 0;
+  animation: starfall linear forwards;
+  user-select: none;
+}
+@keyframes starfall {
+  0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(60px) rotate(360deg); }
+}
 </style>
 </head>
 <body>
@@ -2128,7 +2182,7 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
     <button class="rh-btn rh-aa" id="rhAA" title="Tamaño de texto" onclick="openEasterEgg()">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="2" y="17" font-size="14" fill="currentColor" stroke="none" font-family="serif">A</text><text x="11" y="19" font-size="9" fill="currentColor" stroke="none" font-family="serif">A</text></svg>
     </button>
-    <button class="rh-btn" id="rhBookmark" title="Marcar página">
+    <button class="rh-btn" id="rhBookmark" title="Ir a portada" onclick="document.getElementById('navHome').click()">
       <svg width="15" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
     </button>
     <button class="rh-btn" id="rhSearch" title="Trailer &#x279C; &#xbfQui&#xe9n es Ren?" onclick="openTrailer()">
@@ -3025,7 +3079,7 @@ function stopAllMusic() {
     <p>Bye para ti, o para la gente que quieres.</p>
     <p>No hace falta ponerse dramático.</p>
     <p>O sí. Un poco.</p>
-    <p>La canción que suena es triste, pero te hace mover la cabeza.</p>
+    <p>Hay canciones de letra triste, que te hacen mover la cabeza. Es el ritmo, es el tono.</p>
     <p>¿De eso se trata la vida?</p>
     <p>No sabemos.</p>
     <p>Mira por la ventana a un punto fijo por 5 minutos.</p>
@@ -3069,7 +3123,7 @@ function stopAllMusic() {
     <p>Emociones nuevas.</p>
     <p>Reinventarte.</p>
     <p>Transformarte.</p>
-    <p style="font-family:'Caveat',cursive;font-size:.88em;color:rgba(107,0,0,.50);font-style:italic">♦ escucha Saoko de la Rosalía</p>
+    <p class="easter-saoko-line" style="font-family:'Caveat',cursive;font-size:.88em;color:rgba(107,0,0,.50);font-style:italic">♦ escucha Saoko de la Rosalía</p>
     <p>Perdón.</p>
     <p>Eso te pasa por tocar.</p>
     <p>Así funciona la curiosidad:</p>
@@ -3078,23 +3132,71 @@ function stopAllMusic() {
 
 <audio id="audio-ticket" preload="none" src="https://ia902900.us.archive.org/5/items/eruption-one-way-ticket-sub-espanol-ingles-video-hd/Eruption%20-%20One%20Way%20Ticket%20%20Sub%20Espa%C3%B1ol%20%26%20Ingl%C3%A9s%20%20Video%20HD.mp3"></audio>
 <audio id="audio-angel" preload="auto" src="https://ia601507.us.archive.org/19/items/real-life-send-me-an-angel-extended-dance-mix/Real%20Life%20-%20Send%20Me%20An%20Angel%20%28Extended%20Dance%20Mix%29.mp3" loop></audio>
+<audio id="audio-instrumental" preload="auto" src="https://ia600603.us.archive.org/28/items/daft-punk-ft.-alta-farra-veridis-farra-reggaeton-extended-unofficial-mashup/Daft%20Punk%20ft.%20AltaFarra%20-%20VeridisFarra%20%28REGGAETON%20EXTENDED%20UNOFFICIAL%20MASHUP%29.mp3"></audio>
+<audio id="audio-saoko" preload="auto" src="https://ia902903.us.archive.org/5/items/rosali-a-saoko-letra-lyrics/ROSAL%C3%8DA%20-%20SAOKO%20%28LetraLyrics%29.mp3"></audio>
 <script>
 function startOneWayTicket(){
-  var a=document.getElementById('audio-ticket');if(!a)return;
+  var inst=document.getElementById('audio-instrumental');
+  if(!inst)return;
   stopAllMusic();
-  var t=document.querySelector('[onclick="startOneWayTicket()"]');if(t)t.classList.add('played');
-  mLabel.textContent='\u266a One Way Ticket \u2014 Eruption';
-  mWidget.classList.add('mw-show','mw-playing');currentMusicPage=23;
-  a.currentTime=0;a.volume=0;
-  a.play().then(function(){fadeAudio(a,0,0.65,2000);}).catch(function(){});
-  var lines=document.querySelectorAll('#easter-text p,#easter-text .easter-tap-wrap');
-  lines.forEach(function(el){el.style.opacity='0';el.style.transition='opacity .8s ease';});
-  var delay=600;
+  var t=document.querySelector('[onclick="startOneWayTicket()"]');
+  if(t){t.classList.add('played');t.style.display='none';}
+  inst.currentTime=0;inst.volume=0;
+  inst.play().then(function(){fadeAudio(inst,0,0.55,1500);}).catch(function(){});
+  inst._loopFn=function(){if(inst.currentTime>=19){inst.currentTime=0;}};
+  inst._loopIv=setInterval(inst._loopFn,200);
+  var lines=Array.from(document.querySelectorAll('#easter-text p,#easter-text .easter-tap-wrap'));
+  var saokoDone=false;
+  var delay=800;
   lines.forEach(function(el){
-    setTimeout(function(){el.style.opacity='1';},delay);
+    if(parseFloat(el.style.opacity||'0')>0.5)return;
+    var isSaoko=el.textContent.indexOf('Saoko')>=0;
+    setTimeout(function(){
+      el.style.transition='opacity 1s ease';el.style.opacity='1';
+      if(isSaoko&&!saokoDone){saokoDone=true;setTimeout(startSaoko,1200);}
+    },delay);
     var len=el.textContent.length;
-    delay+=len>80?2200:len>40?1600:len>15?1200:900;
+    delay+=isSaoko?0:(len>80?2800:len>40?2200:len>15?1600:1100);
   });
+  setTimeout(startEasterFinale,delay+2500);
+}
+function startSaoko(){
+  var inst=document.getElementById('audio-instrumental');
+  var saoko=document.getElementById('audio-saoko');
+  if(inst){if(inst._loopIv){clearInterval(inst._loopIv);inst._loopIv=null;}fadeAudio(inst,inst.volume,0,800,function(){inst.pause();inst.currentTime=0;});}
+  if(saoko){saoko.currentTime=0;saoko.volume=0;saoko.play().then(function(){fadeAudio(saoko,0,0.75,1500);}).catch(function(){});}
+}
+function startEasterFinale(){
+  var overlay=document.getElementById('easter-overlay');
+  if(overlay){overlay.style.transition='opacity 1.5s ease';overlay.style.opacity='0';}
+  setTimeout(function(){
+    if(overlay)overlay.style.display='none';
+    var fin=document.getElementById('easter-finale');if(!fin)return;
+    fin.classList.add('show');
+    setTimeout(function(){var b=document.getElementById('easter-butterfly');if(b)b.classList.add('visible');},400);
+    setTimeout(launchStars,1200);
+    setTimeout(function(){var txt=document.getElementById('easter-transform-text');if(txt){txt.textContent='yo me transformo';txt.classList.add('visible');}},2500);
+    setTimeout(function(){fin.classList.add('dark');},4500);
+    setTimeout(function(){
+      fin.classList.remove('show','dark');fin.style.display='none';
+      var saoko=document.getElementById('audio-saoko');
+      if(saoko&&!saoko.paused)fadeAudio(saoko,saoko.volume,0,1500,function(){saoko.pause();saoko.currentTime=0;});
+      if(overlay){overlay.style.opacity='1';overlay.style.display='none';overlay.classList.remove('open');}
+    },7000);
+  },1500);
+}
+function launchStars(){
+  var stars=['✨','⭐','✳','✴','✵','★','✯','✶'];
+  for(var s=0;s<40;s++){(function(i){setTimeout(function(){
+    var el=document.createElement('div');el.className='star-particle';
+    el.textContent=stars[Math.floor(Math.random()*stars.length)];
+    el.style.left=Math.random()*100+'vw';el.style.top=(Math.random()*60+10)+'vh';
+    var dur=(Math.random()*1.5+1).toFixed(1);el.style.animationDuration=dur+'s';
+    el.style.fontSize=(Math.random()*1.5+0.6).toFixed(1)+'rem';
+    document.body.appendChild(el);
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},parseFloat(dur)*1000+200);
+  },i*80);})(s);}
+}
 }
 function openEasterEgg(){
   stopAllMusic();
@@ -3197,5 +3299,9 @@ function openEasterEgg(){
   });
 })();
 </script>
-</body>
+
+<div id="easter-finale">
+  <div class="butterfly" id="easter-butterfly">🦋</div>
+  <div id="easter-transform-text"></div>
+</div></body>
 </html>

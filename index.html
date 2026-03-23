@@ -232,6 +232,10 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   border-radius:8px;
   outline: 2px solid #3a1a08;
   outline-offset: 4px;
+  box-shadow:
+    -12px 20px 60px rgba(0,0,0,.70),
+    12px 20px 60px rgba(0,0,0,.50),
+    0 40px 80px rgba(0,0,0,.40);
 }
 
 .pg{width:var(--pw);height:var(--ph);position:relative;overflow:hidden;flex-shrink:0;}
@@ -1179,8 +1183,8 @@ html, body {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 50px;
-  background: #0d1520;
-  border-bottom: 1px solid rgba(100,130,170,.22);
+  background: #1a0505;
+  border-bottom: 1px solid rgba(184,100,100,.20);
   display: flex;
   align-items: center;
   gap: 0;
@@ -1269,7 +1273,7 @@ html, body {
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  background: radial-gradient(ellipse at 50% 40%, #1a2535 0%, #12181f 70%) !important;
+  background: radial-gradient(ellipse at 50% 40%, #2a0d0d 0%, #150606 70%) !important;
   overflow: visible !important;
   gap: 0 !important;
 }
@@ -1313,19 +1317,24 @@ html, body {
   overflow: hidden !important;
   position: relative !important;
 }
-.pg-l .p-story {
-  overflow-y: auto !important;
-  height: 100% !important;
-}
+
 .pg-r {
   background: #f7f2e8 !important;
   border-radius: 0 4px 4px 4px !important;
   overflow: hidden !important;
   position: relative !important;
 }
-.pg-r .p-story {
-  overflow-y: auto !important;
-  height: 100% !important;
+@media (min-width: 701px) {
+  .pg-r .p-story {
+    overflow-y: auto !important;
+    height: 100% !important;
+    overflow-x: hidden !important;
+  }
+  .pg-l .p-story {
+    overflow-y: auto !important;
+    height: 100% !important;
+    overflow-x: hidden !important;
+  }
 }
 /* p-story must be above zones so scroll works */
 .p-story {
@@ -1398,7 +1407,7 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
   align-items: center !important;
   gap: 10px !important;
   padding: 4px 12px 6px !important;
-  background: rgba(10,14,22,.92) !important;
+  background: rgba(25,5,5,.92) !important;
   backdrop-filter: blur(10px) !important;
   box-sizing: border-box !important;
   opacity: 1 !important;
@@ -2054,6 +2063,50 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
 .easter-tap-wrap{display:block;text-align:center;margin:1.6rem 0;cursor:pointer;}
 .easter-tap-btn{font-family:'Caveat',cursive;font-size:1rem;color:rgba(107,0,0,.80);border-bottom:1.5px dashed rgba(107,0,0,.50);position:relative;}
 .easter-tap-annotation{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.75em;color:rgba(107,0,0,.50);white-space:nowrap;pointer-events:none;}
+
+/* ── Desktop book life ── */
+@media (min-width: 701px) {
+  .pg-l {
+    box-shadow: inset -8px 0 20px rgba(0,0,0,.18), inset -2px 0 4px rgba(0,0,0,.12) !important;
+  }
+  .pg-r {
+    box-shadow: inset 8px 0 20px rgba(0,0,0,.12) !important;
+  }
+  .book-spine {
+    background: linear-gradient(to right,
+      rgba(0,0,0,.35) 0%,
+      rgba(60,20,5,.80) 25%,
+      rgba(80,30,8,.90) 50%,
+      rgba(60,20,5,.80) 75%,
+      rgba(0,0,0,.35) 100%) !important;
+    box-shadow: 0 0 12px rgba(0,0,0,.60) !important;
+  }
+  /* Page texture on desktop */
+  .pg-l::after, .pg-r::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 40px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .pg-l::after {
+    right: 0;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,.06));
+  }
+  .pg-r::before {
+    left: 0;
+    background: linear-gradient(to left, transparent, rgba(0,0,0,.04));
+  }
+}
+
+@media (min-width: 701px) {
+  .book-closed {
+    width: clamp(280px, 28vw, 420px) !important;
+    height: calc(clamp(280px, 28vw, 420px) * 1.54) !important;
+    max-height: calc(100vh - 120px) !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -2078,8 +2131,8 @@ body.txt-lg .story-scroll .pd { font-size: clamp(1.38rem, 2.2vw, 1.62rem) !impor
     <button class="rh-btn" id="rhBookmark" title="Marcar página">
       <svg width="15" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
     </button>
-    <button class="rh-btn" id="rhSearch" title="Buscar" onclick="openTrailer()">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <button class="rh-btn" id="rhSearch" title="Trailer &#x279C; &#xbfQui&#xe9n es Ren?" onclick="openTrailer()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="6"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="#150606" stroke="none"/></svg>
     </button>
   </div>
 </header>

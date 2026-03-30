@@ -3592,7 +3592,9 @@ mBtn.addEventListener('click', () => {
 // ── Cambio de página ──
 window.onMusicPageChange = function(pageIdx, rightIdx) {
   const musicPages = new Set([4,7,11,13,22]);
-  const active = musicPages.has(pageIdx) ? pageIdx : (rightIdx != null && musicPages.has(rightIdx) ? rightIdx : null);
+  // Tokio Hotel (page 22) only via LEFT page to avoid firing during Relato 17
+  const active = musicPages.has(pageIdx) ? pageIdx :
+    (rightIdx != null && musicPages.has(rightIdx) && rightIdx !== 22 ? rightIdx : null);
 
   if (currentMusicPage !== null && active !== currentMusicPage) {
     if (currentMusicPage === 7)  stopMidnightCity();
@@ -4264,9 +4266,28 @@ function openEasterEgg(){
 function closeWelcome(){
   var w=document.getElementById('cover-welcome');
   if(!w)return;
-  w.style.transition='opacity .9s ease';
-  w.style.opacity='0';
-  setTimeout(function(){w.style.display='none';},900);
+  // On mobile: skip physical cover, go straight to page 1
+  if(window.innerWidth<=700){
+    w.style.transition='opacity .5s ease';
+    w.style.opacity='0';
+    setTimeout(function(){
+      w.style.display='none';
+      // Open book directly to first page
+      var bc=document.getElementById('bookClosed');
+      var bo=document.getElementById('bookOpen');
+      if(bc)bc.style.display='none';
+      if(bo)bo.style.display='flex';
+      document.body.classList.remove('showing-cover');
+      if(typeof navRow!=='undefined')navRow.classList.add('show');
+      cur=1; // Go to Prólogo
+      if(typeof renderPages==='function')renderPages(cur);
+      if(typeof updateNav==='function')updateNav();
+    },500);
+  } else {
+    w.style.transition='opacity .9s ease';
+    w.style.opacity='0';
+    setTimeout(function(){w.style.display='none';},900);
+  }
 }
 
 // ── INDEX DRAWER ─────────────────────────────────────
@@ -4339,51 +4360,26 @@ function goPage(targetPage){
   if(typeof updateNav==='function')updateNav();
 }
 
-// ── STORY TRANSITION VEIL on page flip ───────────────
-// Wrap the existing navigation to add veil transition for story→story
+// ── STORY TRANSITION VEIL: patch flipNext/flipPrev directly ─
 (function(){
-  var _orig;
   document.addEventListener('DOMContentLoaded',function(){
-    var navN=document.getElementById('navNext');
-    var navP=document.getElementById('navPrev');
-    if(!navN)return;
-
-    function withVeil(fn){
-      return function(e){
-        var pg=document.getElementById('pageR');
-        var isStory=pg&&pg.querySelector('.p-story');
-        if(!isStory){fn.call(this,e);return;}
+    // Patch the existing flip functions to add veil
+    var _origFlipNext=window.flipNext;
+    var _origFlipPrev=window.flipPrev;
+    if(!_origFlipNext||!_origFlipPrev)return;
+    function applyVeil(fn){
+      return function(){
         var veil=document.getElementById('story-veil');
-        if(!veil){fn.call(this,e);return;}
+        if(!veil){fn();return;}
         veil.classList.add('dark');
-        var self=this;
         setTimeout(function(){
-          fn.call(self,e);
-          setTimeout(function(){veil.classList.remove('dark');},350);
-        },480);
+          fn();
+          setTimeout(function(){veil.classList.remove('dark');},320);
+        },380);
       };
     }
-    // We hook into click events — store originals
-    var origNextClick=navN.onclick;
-    var origPrevClick=navP.onclick;
-    navN.addEventListener('click',withVeil(function(){
-      if(typeof cur!=='undefined'&&typeof step!=='undefined'){
-        cur=Math.min(cur+step(),typeof maxCur==='function'?maxCur():999);
-        if(typeof renderPages==='function')renderPages(cur);
-        if(typeof updateNav==='function')updateNav();
-      }
-    }));
-    navP.addEventListener('click',withVeil(function(){
-      if(typeof cur!=='undefined'&&typeof step!=='undefined'){
-        cur=Math.max(cur-step(),-1);
-        if(cur<0){
-          if(typeof showCover==='function')showCover();
-        } else {
-          if(typeof renderPages==='function')renderPages(cur);
-          if(typeof updateNav==='function')updateNav();
-        }
-      }
-    }));
+    window.flipNext=applyVeil(_origFlipNext);
+    window.flipPrev=applyVeil(_origFlipPrev);
   });
 })();
 
@@ -4435,7 +4431,7 @@ var STORY_AUDIO_MAP = {
   7:  'audio-midnight',     // Relato 04
   11: 'audio-tatu',         // Relato 08
   13: 'audio-zombie',       // Relato 10
-  22: 'audio-tokio'         // Final
+  21: 'audio-tokio'         // Preload before final doodle page
 };
 var _preloaded = {};
 function preloadStoryAudio(pageIdx) {
